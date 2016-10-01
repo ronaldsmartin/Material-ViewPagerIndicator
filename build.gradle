@@ -21,3 +21,21 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    compileSdkVersion = 24
+    minSdkVersion = 9
+    targetSdkVersion = 24
+    buildToolsVersion = "24.0.2"
+}
+
+ext.deps = [
+    supportAnnotations: 'com.android.support:support-annotations:24.2.1',
+    supportAppCompat: 'com.android.support:appcompat-v7:24.2.1',
+    supportCoreUi: 'com.android.support:support-core-ui:24.2.1',
+    supportDesign: 'com.android.support:design:24.2.1',
+    supportFragments: 'com.android.support:support-fragment:24.2.1',
+
+    junit: 'junit:junit:4.12',
+    espresso: 'com.android.support.test.espresso:espresso-core:2.2.2'
+]
