@@ -29,6 +29,7 @@ dependencies {
 
     compile deps.supportAnnotations
     compile deps.supportAppCompat
+    compile deps.supportFragments
 
     androidTestCompile deps.espresso
     testCompile deps.junit
