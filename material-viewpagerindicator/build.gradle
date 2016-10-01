@@ -1,20 +1,18 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.itsronald.materialviewpagerindicatorsample"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-
+        minSdkVersion 9
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
 
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -25,10 +23,10 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':material-viewpagerindicator')
 
     compile deps.supportAnnotations
-    compile deps.supportAppCompat
+    compile deps.supportCoreUi
+    compile deps.supportFragments
 
     androidTestCompile deps.espresso
     testCompile deps.junit
