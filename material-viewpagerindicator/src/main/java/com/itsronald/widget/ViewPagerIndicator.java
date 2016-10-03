@@ -259,6 +259,7 @@ public class ViewPagerIndicator extends ViewGroup {
             lastKnownCurrentPage = -1;
             lastKnownPositionOffset = -1;
             updateIndicators(viewPager.getCurrentItem(), newAdapter);
+            invalidate();
             requestLayout();
         }
     }
@@ -268,10 +269,33 @@ public class ViewPagerIndicator extends ViewGroup {
         Log.w(TAG, "Unimplemented");
 
         final int pageCount = pagerAdapter == null ? 0 : pagerAdapter.getCount();
+        updateDotCount(pageCount);
         Log.d(TAG, "Num pages: " + pageCount);
 
         lastKnownCurrentPage = currentPage;
         Log.d(TAG, "Current page: " + lastKnownCurrentPage);
+    }
+
+    private void updateDotCount(int newDotCount) {
+        int dotCount = indicatorDots.size();
+        if (dotCount < newDotCount) {
+            final LayoutParams layoutParams =
+                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            while (dotCount++ != newDotCount) {
+                final IndicatorDotView newDot = new IndicatorDotView(getContext());
+                newDot.setRadius(dotRadius);
+                newDot.setColor(unselectedDotColor);
+                indicatorDots.add(newDot);
+                addViewInLayout(newDot, -1, layoutParams, true);
+            }
+        } else if (dotCount > newDotCount) {
+            final List<IndicatorDotView> removedDots = indicatorDots
+                    .subList(newDotCount, dotCount);
+            for (IndicatorDotView removedDot : removedDots) {
+                removeViewInLayout(removedDot);
+            }
+            indicatorDots.removeAll(removedDots);
+        }
     }
 
     /**
