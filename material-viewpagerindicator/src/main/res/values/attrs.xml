@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="dotRadius" format="dimension" />
+
+    <declare-styleable name="ViewPagerIndicator">
+        <attr name="dotRadius" />
+        <attr name="dotPadding" format="dimension" />
+        <attr name="selectedDotColor" format="color" />
+        <attr name="unselectedDotColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="IndicatorDotView">
+        <attr name="dotRadius" />
+        <attr name="dotColor" format="color" />
+    </declare-styleable>
+</resources>
