@@ -15,6 +15,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
@@ -68,6 +69,7 @@ public class ViewPagerIndicator extends ViewGroup {
 
     //region State
 
+    private int gravity = Gravity.CENTER_VERTICAL;
     private int lastKnownCurrentPage = -1;
     private int lastKnownPositionOffset = -1;
 
@@ -103,6 +105,8 @@ public class ViewPagerIndicator extends ViewGroup {
                       int defStyleRes) {
         TypedArray attributes = context
                 .obtainStyledAttributes(attrs, R.styleable.ViewPagerIndicator, defStyleAttr, defStyleRes);
+
+        gravity = attributes.getInt(R.styleable.ViewPagerIndicator_android_gravity, gravity);
 
         final float scale = getResources().getDisplayMetrics().density;
 
@@ -369,6 +373,25 @@ public class ViewPagerIndicator extends ViewGroup {
 
 
     //region Accessors
+
+    /**
+     * Get the {@link Gravity} used to position dots within the indicator.
+     * Only the vertical gravity component is used.
+     */
+    public int getGravity() {
+        return gravity;
+    }
+
+    /**
+     * Set the {@link Gravity} used to position dots within the indicator.
+     * Only the vertical gravity component is used.
+     *
+     * @param newGravity {@link Gravity} constant for positioning indicator dots.
+     */
+    public void setGravity(int newGravity) {
+        gravity = newGravity;
+        requestLayout();
+    }
 
     @Px
     public int getDotPadding() {
