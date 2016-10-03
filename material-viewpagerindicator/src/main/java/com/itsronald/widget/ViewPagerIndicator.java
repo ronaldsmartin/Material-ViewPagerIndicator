@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -132,6 +133,58 @@ public class ViewPagerIndicator extends ViewGroup {
     }
 
     //endregion
+
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        final int heightPadding = getPaddingTop() + getPaddingBottom();
+        final int childHeightSpec = getChildMeasureSpec(heightMeasureSpec,
+                heightPadding, LayoutParams.WRAP_CONTENT);
+
+        final int widthPadding = getPaddingLeft() + getPaddingRight();
+        final int childWidthSpec = getChildMeasureSpec(widthMeasureSpec,
+                widthPadding, LayoutParams.WRAP_CONTENT);
+
+        // Measure subviews.
+        selectedDot.measure(childWidthSpec, childHeightSpec);
+        for (IndicatorDotView indicatorDot : indicatorDots) {
+            indicatorDot.measure(childWidthSpec, childHeightSpec);
+        }
+
+        // Calculate measurement for this view.
+        final int width;
+        final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        if (widthMode == MeasureSpec.EXACTLY) {
+            /*
+             * Due to the implementation of onMeasure() in ViewPager, this case will always be
+             * called if vertical layout_gravity is specified on this view. Since the Material
+             * Design spec usually positions dot indicators like this at the bottom of pages, this
+             * case will be called almost all the time.
+             */
+            width = MeasureSpec.getSize(widthMeasureSpec);
+        } else {
+            final int dotCount = indicatorDots.size();
+            final int totalDotWidth = selectedDot.getMeasuredWidth() * dotCount;
+            final int totalDotPadding = dotPadding * (dotCount - 1);
+            final int minHeight = ViewCompat.getMinimumWidth(this);
+            width = Math.max(minHeight, totalDotWidth + totalDotPadding + widthPadding);
+        }
+
+        final int height;
+        final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        if (heightMode == MeasureSpec.EXACTLY) {
+            height = MeasureSpec.getSize(heightMeasureSpec);
+        } else {
+            final int indicatorHeight = selectedDot.getMeasuredHeight();
+            final int minHeight = ViewCompat.getMinimumHeight(this);
+            height = Math.max(minHeight, indicatorHeight + heightPadding);
+        }
+
+        final int childState = ViewCompat.getMeasuredState(selectedDot);
+        final int measuredHeight = ViewCompat.resolveSizeAndState(height, heightMeasureSpec,
+                childState << ViewCompat.MEASURED_HEIGHT_STATE_SHIFT);
+        setMeasuredDimension(width, measuredHeight);
+    }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
