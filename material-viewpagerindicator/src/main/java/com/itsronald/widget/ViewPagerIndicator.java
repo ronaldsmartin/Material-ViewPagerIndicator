@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Dimension;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
@@ -47,10 +48,14 @@ public class ViewPagerIndicator extends ViewGroup {
     //endregion
 
     //region Indicator Dots
+    @Dimension
+    private static final int DEFAULT_DOT_PADDING_DIP = 6;
 
     @NonNull
     private List<IndicatorDotView> indicatorDots = new ArrayList<>();
     private IndicatorDotView selectedDot;   // @NonNull, but initialized in init().
+    @Px
+    private int dotPadding;
     @Px
     private int dotRadius;
     @ColorInt
@@ -99,6 +104,11 @@ public class ViewPagerIndicator extends ViewGroup {
                 .obtainStyledAttributes(attrs, R.styleable.ViewPagerIndicator, defStyleAttr, defStyleRes);
 
         final float scale = getResources().getDisplayMetrics().density;
+
+        final int defaultDotPadding = (int) (DEFAULT_DOT_PADDING_DIP * scale + 0.5);
+        dotPadding = attributes
+                .getDimensionPixelSize(R.styleable.ViewPagerIndicator_dotPadding, defaultDotPadding);
+
         final int defaultDotRadius = (int) (IndicatorDotView.DEFAULT_DOT_RADIUS_DIP * scale + 0.5);
         dotRadius = attributes.getDimensionPixelSize(
                 R.styleable.ViewPagerIndicator_dotRadius,
@@ -282,6 +292,20 @@ public class ViewPagerIndicator extends ViewGroup {
 
 
     //region Accessors
+
+    @Px
+    public int getDotPadding() {
+        return dotPadding;
+    }
+
+    public void setDotPadding(@Px int newDotPadding) {
+        if (dotPadding == newDotPadding) return;
+        if (newDotPadding < 0) newDotPadding = 0;
+
+        dotPadding = newDotPadding;
+        invalidate();
+        requestLayout();
+    }
 
     @Px
     public int getDotRadius() {
