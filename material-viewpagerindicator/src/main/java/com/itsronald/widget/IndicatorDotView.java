@@ -27,9 +27,13 @@ class IndicatorDotView extends ImageView {
     //region Constants
 
     @Dimension
-    protected static int DEFAULT_DOT_RADIUS_DIP = 4;
+    static final int DEFAULT_DOT_RADIUS_DIP = 4;
     @ColorInt
-    protected static int DEFAULT_DOT_COLOR = Color.parseColor("#75FFFFFF");
+    static final int DEFAULT_DOT_COLOR = Color.parseColor("#75FFFFFF");
+    @ColorInt
+    static final int DEFAULT_UNSELECTED_DOT_COLOR = DEFAULT_DOT_COLOR;
+    @ColorInt
+    static final int DEFAULT_SELECTED_DOT_COLOR = Color.WHITE;
 
     //endregion
 
@@ -55,7 +59,7 @@ class IndicatorDotView extends ImageView {
         init(context, attrs, defStyleAttr, 0);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public IndicatorDotView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs, defStyleAttr, defStyleRes);

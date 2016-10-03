@@ -2,10 +2,13 @@ package com.itsronald.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.Px;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -14,6 +17,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ViewPagerIndicator is a non-interactive indicator of the current, next,
@@ -29,33 +34,91 @@ public class ViewPagerIndicator extends ViewGroup {
 
     @NonNull
     private static final String TAG = "ViewPagerIndicator";
+
+    //region ViewPager
+
     @NonNull
     private final PageListener pageListener = new PageListener();
     @Nullable
     private ViewPager viewPager;
     @Nullable
     private WeakReference<PagerAdapter> pagerAdapterRef;
+
+    //endregion
+
+    //region Indicator Dots
+
+    @NonNull
+    private List<IndicatorDotView> indicatorDots = new ArrayList<>();
+    private IndicatorDotView selectedDot;   // @NonNull, but initialized in init().
+    @Px
+    private int dotRadius;
+    @ColorInt
+    private int unselectedDotColor;
+    @ColorInt
+    private int selectedDotColor;
+
+    //endregion
+
+    //region State
+
     private int lastKnownCurrentPage = -1;
     private int lastKnownPositionOffset = -1;
+
+    //endregion
 
 
     //region Constructors
 
     public ViewPagerIndicator(Context context) {
         super(context);
+        init(context, null, 0 ,0);
     }
 
     public ViewPagerIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context, attrs, 0, 0);
     }
 
     public ViewPagerIndicator(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context, attrs, defStyleAttr, 0);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public ViewPagerIndicator(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    private void init(@NonNull Context context,
+                      @Nullable AttributeSet attrs,
+                      int defStyleAttr,
+                      int defStyleRes) {
+        TypedArray attributes = context
+                .obtainStyledAttributes(attrs, R.styleable.ViewPagerIndicator, defStyleAttr, defStyleRes);
+
+        final float scale = getResources().getDisplayMetrics().density;
+        final int defaultDotRadius = (int) (IndicatorDotView.DEFAULT_DOT_RADIUS_DIP * scale + 0.5);
+        dotRadius = attributes.getDimensionPixelSize(
+                R.styleable.ViewPagerIndicator_dotRadius,
+                defaultDotRadius
+        );
+
+        unselectedDotColor = attributes.getColor(
+                R.styleable.ViewPagerIndicator_unselectedDotColor,
+                IndicatorDotView.DEFAULT_UNSELECTED_DOT_COLOR
+        );
+        selectedDotColor = attributes.getColor(
+                R.styleable.ViewPagerIndicator_selectedDotColor,
+                IndicatorDotView.DEFAULT_SELECTED_DOT_COLOR
+        );
+
+        attributes.recycle();
+
+        selectedDot = new IndicatorDotView(context, null, defStyleAttr, defStyleRes);
+        selectedDot.setColor(selectedDotColor);
+        selectedDot.setRadius(dotRadius);
     }
 
     //endregion
@@ -220,6 +283,48 @@ public class ViewPagerIndicator extends ViewGroup {
 
     //region Accessors
 
+    @Px
+    public int getDotRadius() {
+        return dotRadius;
+    }
+
+    public void setDotRadius(@Px int newRadius) {
+        if (dotRadius == newRadius) return;
+        if (newRadius < 0) newRadius = 0;
+
+        dotRadius = newRadius;
+        for (IndicatorDotView indicatorDot : indicatorDots) {
+            indicatorDot.setRadius(dotRadius);
+        }
+        invalidate();
+        requestLayout();
+    }
+
+    @ColorInt
+    public int getUnselectedDotColor() {
+        return unselectedDotColor;
+    }
+
+    public void setUnselectedDotColor(@ColorInt int color) {
+        unselectedDotColor = color;
+        for (IndicatorDotView indicatordot : indicatorDots) {
+            indicatordot.setColor(color);
+            indicatordot.invalidate();
+        }
+    }
+
+    @ColorInt
+    public int getSelectedDotColor() {
+        return selectedDotColor;
+    }
+
+    public void setSelectedDotColor(@ColorInt int color) {
+        selectedDotColor = color;
+        if (selectedDot != null) {
+            selectedDot.setColor(color);
+            selectedDot.invalidate();
+        }
+    }
 
     //endregion
 }
