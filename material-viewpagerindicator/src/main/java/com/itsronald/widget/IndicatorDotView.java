@@ -1,5 +1,6 @@
 package com.itsronald.widget;
 
+import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,14 +13,16 @@ import android.support.annotation.Dimension;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
-import android.support.annotation.StyleableRes;
 import android.util.AttributeSet;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 
 /**
  * A circular dot used to indicate a page in a ViewPager.
  */
-public class IndicatorDotView extends ImageView {
+class IndicatorDotView extends ImageView {
 
     //region Constants
 
@@ -27,13 +30,13 @@ public class IndicatorDotView extends ImageView {
     protected static int DEFAULT_DOT_RADIUS_DIP = 4;
     @ColorInt
     protected static int DEFAULT_DOT_COLOR = Color.parseColor("#75FFFFFF");
-    @StyleableRes
-    protected static int DEFAULT_COLOR_STYLEABLE_ID = R.styleable.IndicatorDotView_dotColor;
 
     //endregion
 
     @NonNull
     private final ShapeDrawable dot = new ShapeDrawable(new OvalShape());
+    @Px
+    private int dotRadius;
 
     //region Constructors
 
@@ -69,10 +72,10 @@ public class IndicatorDotView extends ImageView {
 
         final float scale = getResources().getDisplayMetrics().density;
         final int defaultDotRadius = (int) (DEFAULT_DOT_RADIUS_DIP * scale + 0.5);
-        final int dotRadius = attributes.getDimensionPixelSize(R.styleable.IndicatorDotView_dotRadius, defaultDotRadius);
+        dotRadius = attributes.getDimensionPixelSize(R.styleable.IndicatorDotView_dotRadius, defaultDotRadius);
         setRadius(dotRadius);
 
-        final int dotColor = attributes.getColor(DEFAULT_COLOR_STYLEABLE_ID, DEFAULT_DOT_COLOR);
+        final int dotColor = attributes.getColor(R.styleable.IndicatorDotView_dotColor, DEFAULT_DOT_COLOR);
         setColor(dotColor);
 
         attributes.recycle();
@@ -103,4 +106,63 @@ public class IndicatorDotView extends ImageView {
     }
 
     //endregion
+
+    /**
+     * Start a Material reveal animation of this view.
+     */
+    void reveal() {
+        final int centerX = getWidth() / 2;
+        final int centerY = getHeight() / 2;
+        final long animationDuration = getContext().getResources()
+                .getInteger(android.R.integer.config_shortAnimTime);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startCircularReveal(centerX, centerY, animationDuration);
+        } else {
+            startScaleReveal(centerX, centerY, animationDuration);
+        }
+    }
+
+    /**
+     * Start a Material reveal animation of this view.
+     *
+     * @param centerX           The X point from which the animation starts.
+     * @param centerY           The Y point from which the animation starts.
+     * @param animationDuration How long the animation should last.
+     * @see #reveal()
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void startCircularReveal(int centerX, int centerY, long animationDuration) {
+        Animator revealAnimator = ViewAnimationUtils
+                .createCircularReveal(this, centerX, centerY, 0, dotRadius);
+        revealAnimator.setDuration(animationDuration);
+
+        setVisibility(VISIBLE);
+        revealAnimator.start();
+    }
+
+    /**
+     * Start a fallback reveal animation of this view for API versions < Lollipop.
+     * <p>
+     * It looks the same as the Material Circular Reveal animation (because this is already
+     * a circle) but is fractionally slower to start.
+     *
+     * @param centerX           The X point from which the animation starts.
+     * @param centerY           The Y point from which the animation starts.
+     * @param animationDuration How long the animation should last.
+     * @see #reveal()
+     */
+    private void startScaleReveal(int centerX, int centerY, long animationDuration) {
+        ScaleAnimation scaleAnimation = new ScaleAnimation(0f, 1f, 0f, 1f, centerX, centerY);
+
+        scaleAnimation.setFillBefore(true);
+        scaleAnimation.setFillAfter(true);
+        scaleAnimation.setFillEnabled(true);
+
+        scaleAnimation.setDuration(animationDuration);
+        scaleAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        setVisibility(VISIBLE);
+        startAnimation(scaleAnimation);
+    }
 }
