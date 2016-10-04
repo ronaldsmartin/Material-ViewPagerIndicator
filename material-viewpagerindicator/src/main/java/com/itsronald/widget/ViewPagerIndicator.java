@@ -71,7 +71,8 @@ public class ViewPagerIndicator extends ViewGroup {
 
     private int gravity = Gravity.CENTER_VERTICAL;
     private int lastKnownCurrentPage = -1;
-    private int lastKnownPositionOffset = -1;
+    private float lastKnownPositionOffset = -1;
+    private boolean isUpdatingPositions = false;
 
     //endregion
 
@@ -170,8 +171,8 @@ public class ViewPagerIndicator extends ViewGroup {
             final int dotCount = indicatorDots.size();
             final int totalDotWidth = selectedDot.getMeasuredWidth() * dotCount;
             final int totalDotPadding = dotPadding * (dotCount - 1);
-            final int minHeight = ViewCompat.getMinimumWidth(this);
-            width = Math.max(minHeight, totalDotWidth + totalDotPadding + widthPadding);
+            final int minWidth = ViewCompat.getMinimumWidth(this);
+            width = Math.max(minWidth, totalDotWidth + totalDotPadding + widthPadding);
         }
 
         final int height;
@@ -184,9 +185,9 @@ public class ViewPagerIndicator extends ViewGroup {
             height = Math.max(minHeight, indicatorHeight + heightPadding);
         }
 
-        final int childState = ViewCompat.getMeasuredState(selectedDot);
+        final int childState = ViewCompat.getMeasuredHeightAndState(selectedDot);
         final int measuredHeight = ViewCompat.resolveSizeAndState(height, heightMeasureSpec,
-                childState << ViewCompat.MEASURED_HEIGHT_STATE_SHIFT);
+                childState);
         setMeasuredDimension(width, measuredHeight);
     }
 
@@ -278,13 +279,20 @@ public class ViewPagerIndicator extends ViewGroup {
 
         lastKnownCurrentPage = currentPage;
         Log.d(TAG, "Current page: " + lastKnownCurrentPage);
+
+        if (!isUpdatingPositions) {
+            updateIndicatorPositions(currentPage, lastKnownPositionOffset, false);
+        }
     }
 
     private void updateDotCount(int newDotCount) {
+        final LayoutParams layoutParams =
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+
+        // Add unselected dots to layout.
         int dotCount = indicatorDots.size();
         if (dotCount < newDotCount) {
-            final LayoutParams layoutParams =
-                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+
             while (dotCount++ != newDotCount) {
                 final IndicatorDotView newDot = new IndicatorDotView(getContext());
                 newDot.setRadius(dotRadius);
@@ -299,6 +307,14 @@ public class ViewPagerIndicator extends ViewGroup {
                 removeViewInLayout(removedDot);
             }
             indicatorDots.removeAll(removedDots);
+        }
+
+        // Add selected dot to layout.
+        if (newDotCount > 0) {
+            addViewInLayout(selectedDot, -1, layoutParams, true);
+        } else {
+            removeViewInLayout(selectedDot);
+            Log.d(TAG, "Removing selectedDot");
         }
     }
 
@@ -319,6 +335,78 @@ public class ViewPagerIndicator extends ViewGroup {
         } else if (!forceUpdate && positionOffset == lastKnownPositionOffset) {
             return;
         }
+
+        isUpdatingPositions = true;
+
+        final int dotWidth = 2 * dotRadius;
+        final int top = calculateIndicatorDotTop();
+        final int bottom = top + dotWidth;
+        int left = calculateIndicatorDotStart();
+        int right = left + dotWidth;
+        for (int i = 0, dotCount = indicatorDots.size(); i < dotCount; ++i) {
+            final IndicatorDotView dotView = indicatorDots.get(i);
+            dotView.layout(left, top, right, bottom);
+
+            if (i == currentPage) {
+                selectedDot.layout(left, top, right, bottom);
+            }
+
+            left = right + dotPadding;
+            right = left + dotWidth;
+        }
+        selectedDot.bringToFront();
+
+        lastKnownPositionOffset = positionOffset;
+        isUpdatingPositions = false;
+    }
+
+    /**
+     * Calculate the starting vertical position for the line of indicator dots.
+     * @return The first Y coordinate where the indicator dots start.
+     */
+    @Px
+    private int calculateIndicatorDotTop() {
+        final int top;
+        final int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
+        switch (verticalGravity) {
+            default:
+            case Gravity.CENTER_VERTICAL:
+                top = (getHeight() - getPaddingTop() - getPaddingBottom()) / 2 - getDotRadius();
+                break;
+            case Gravity.TOP:
+                top = getPaddingTop();
+                break;
+            case Gravity.BOTTOM:
+                top = getHeight() - getPaddingBottom() - 2 * getDotRadius();
+                break;
+        }
+        return top;
+    }
+
+    /**
+     * Calculate the starting horizontal position for the line of indicator dots.
+     * Assumes dots are centered horizontally.
+     *
+     * @return The first X coordinate where the indicator dots start.
+     */
+    @Px
+    private int calculateIndicatorDotStart() {
+        /*
+         * Calculate the start position by starting from the center of the view and moving left
+         * for half of the dots.
+         */
+        final int dotCount = indicatorDots.size();
+        final float halfDotCount = dotCount / 2f;
+
+        final int dotWidth = 2 * dotRadius;
+        final float totalDotWidth = dotWidth * halfDotCount;
+        // # dot gaps = (numDots - 1), so # dot gaps / 2 = (numDots - 1) / 2 = halfDotCount - 0.5.
+        final float halfDotPaddingCount = Math.max(halfDotCount - 0.5f, 0);
+        final float totalDotPaddingWidth = dotPadding * halfDotPaddingCount;
+
+        int startPosition = getWidth() / 2;
+        startPosition -= totalDotWidth + totalDotPaddingWidth;
+        return startPosition;
     }
 
     private class PageListener extends DataSetObserver
