@@ -462,6 +462,12 @@ public class ViewPagerIndicator extends ViewGroup {
 
     //region Accessors
 
+    @Nullable
+    private IndicatorDotView getDotForPage(int pageIndex) {
+        if (pageIndex > indicatorDots.size() - 1 || pageIndex < 0) return null;
+        return indicatorDots.get(pageIndex);
+    }
+
     /**
      * Get the {@link Gravity} used to position dots within the indicator.
      * Only the vertical gravity component is used.
