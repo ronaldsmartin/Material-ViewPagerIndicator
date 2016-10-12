@@ -281,10 +281,8 @@ public class ViewPagerIndicator extends ViewGroup {
     private void updateIndicators(int currentPage, @Nullable PagerAdapter pagerAdapter) {
         final int pageCount = pagerAdapter == null ? 0 : pagerAdapter.getCount();
         updateDotCount(pageCount);
-        Log.d(TAG, "Num pages: " + pageCount);
 
         lastKnownCurrentPage = currentPage;
-        Log.d(TAG, "Current page: " + lastKnownCurrentPage);
 
         if (!isUpdatingPositions) {
             updateIndicatorPositions(currentPage, lastKnownPositionOffset, false);
@@ -323,7 +321,6 @@ public class ViewPagerIndicator extends ViewGroup {
             addViewInLayout(selectedDot, -1, layoutParams, true);
         } else {
             removeViewInLayout(selectedDot);
-            Log.d(TAG, "Removing selectedDot");
         }
     }
 
@@ -559,12 +556,11 @@ public class ViewPagerIndicator extends ViewGroup {
     @Nullable
     private IndicatorDotPathView getDotPathForPageChange(int oldPageIndex, int newPageIndex) {
         if (oldPageIndex < 0 || newPageIndex < 0
-                || oldPageIndex > dotPaths.size() - 1 || newPageIndex > dotPaths.size() - 1
                 || oldPageIndex == newPageIndex)
             return null;
 
         final int dotPathIndex = oldPageIndex < newPageIndex ? oldPageIndex : newPageIndex;
-        return dotPaths.get(dotPathIndex);
+        return dotPathIndex >= dotPaths.size() ? null : dotPaths.get(dotPathIndex);
     }
 
     @IndicatorDotPathView.PathDirection
