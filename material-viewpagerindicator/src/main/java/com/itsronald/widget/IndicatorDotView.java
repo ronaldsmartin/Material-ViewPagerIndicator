@@ -95,15 +95,24 @@ class IndicatorDotView extends ImageView {
 
     //region Accessors
 
+    @Px
+    int getRadius() {
+        return dotRadius;
+    }
+
     /**
      * Set the preferred dot radius for this view.
      *
      * @param newRadius The new radius, in pixels.
      */
     void setRadius(@Px int newRadius) {
+        dotRadius = newRadius;
+
         final int diameter = newRadius * 2;
         dot.setIntrinsicWidth(diameter);
         dot.setIntrinsicHeight(diameter);
+
+        invalidate();
     }
 
     /**
