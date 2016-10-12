@@ -44,8 +44,8 @@ public class IndicatorDotPathView extends ViewGroup {
 
     //region Constants
 
-    static final long PATH_STRETCH_ANIM_DURATION = 200; // 200 ms == Android's config_shortAnimTime.
-    static final long PATH_RETREAT_ANIM_DURATION = 200; // 200 ms == Android's config_shortAnimTime.
+    static final long PATH_STRETCH_ANIM_DURATION = 150; // 150 ms.
+    static final long PATH_RETREAT_ANIM_DURATION = 100; // 100 ms.
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PATH_DIRECTION_LEFT, PATH_DIRECTION_RIGHT})
@@ -348,7 +348,7 @@ public class IndicatorDotPathView extends ViewGroup {
             growAnimator = ObjectAnimator.ofFloat(centerSegment, "scaleY", fromScale, toScale);
         }
         // Start growing when the two ends of the path meet in the middle.
-        final long animationDuration = PATH_STRETCH_ANIM_DURATION / 2;
+        final long animationDuration = PATH_STRETCH_ANIM_DURATION / 4;
         growAnimator.setStartDelay(animationDuration);
         growAnimator.setDuration(animationDuration);
 

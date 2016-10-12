@@ -40,6 +40,8 @@ class IndicatorDotView extends ImageView {
     @ColorInt
     static final int DEFAULT_SELECTED_DOT_COLOR = Color.WHITE;
 
+    static final long REVEAL_ANIM_DURATION = 100;   // 100 ms
+
     //endregion
 
     @NonNull
@@ -146,11 +148,9 @@ class IndicatorDotView extends ImageView {
     Animator revealAnimator() {
         final int centerX = getWidth() / 2;
         final int centerY = getHeight() / 2;
-        final long animationDuration = getContext().getResources()
-                .getInteger(android.R.integer.config_shortAnimTime);
 
         final Animator animator = revealAnimator(centerX, centerY);
-        animator.setDuration(animationDuration);
+        animator.setDuration(REVEAL_ANIM_DURATION);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
