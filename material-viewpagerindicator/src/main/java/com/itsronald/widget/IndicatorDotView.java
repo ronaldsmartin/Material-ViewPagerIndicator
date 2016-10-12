@@ -243,4 +243,42 @@ class IndicatorDotView extends ImageView {
     }
 
     //endregion
+
+    //region Slide animation
+
+    /**
+     * Animation: Slide this view to another location on the screen.
+     *
+     * @param toX The horizontal coordinate to which this view should move, in this view's
+     *            coordinate space.
+     * @param toY The vertical coordinate to which this view should move, in this view's
+     *            coordinate space.
+     * @return An animator that will move this view to (toX, toY) when started.
+     */
+    Animator slideAnimator(final float toX, final float toY, final long animationDuration) {
+        final float fromTranslation = 0;
+
+        final Animator animator;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            final PropertyValuesHolder translationX = PropertyValuesHolder
+                    .ofFloat(View.TRANSLATION_X, fromTranslation, toX);
+            final PropertyValuesHolder translationY = PropertyValuesHolder
+                    .ofFloat(View.TRANSLATION_Y, fromTranslation, toY);
+            animator = ObjectAnimator.ofPropertyValuesHolder(this, translationX, translationY);
+        } else {
+            final Animator translationXAnimator = ObjectAnimator
+                    .ofFloat(this, "translationX", fromTranslation, toX);
+            final Animator translationYAnimator = ObjectAnimator
+                    .ofFloat(this, "translationY", fromTranslation, toY);
+
+            final AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(translationXAnimator, translationYAnimator);
+            animator = animatorSet;
+        }
+        animator.setDuration(animationDuration);
+
+        return animator;
+    }
+
+    //endregion
 }

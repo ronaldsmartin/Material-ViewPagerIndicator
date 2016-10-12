@@ -5,13 +5,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
@@ -20,6 +20,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import static com.itsronald.widget.IndicatorDotView.DEFAULT_DOT_COLOR;
 import static com.itsronald.widget.IndicatorDotView.DEFAULT_DOT_RADIUS_DIP;
@@ -38,12 +41,28 @@ import static com.itsronald.widget.ViewPagerIndicator.DEFAULT_DOT_PADDING_DIP;
  */
 public class IndicatorDotPathView extends ViewGroup {
 
-    static final long PATH_STRETCH_ANIM_DURATION = 300;
+    //region Constants
+
+    static final long PATH_STRETCH_ANIM_DURATION = 200; // 200 ms == Android's config_shortAnimTime.
+    static final long PATH_RETREAT_ANIM_DURATION = 200; // 200 ms == Android's config_shortAnimTime.
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({PATH_DIRECTION_LEFT, PATH_DIRECTION_RIGHT})
+    public @interface PathDirection {}
+
+    @PathDirection
+    public static final int PATH_DIRECTION_LEFT = 0;
+    @PathDirection
+    public static final int PATH_DIRECTION_RIGHT = 1;
+
+    //endregion
 
     @Px
     private int dotPadding;
     @Px
     private int dotRadius;
+
+    //region Subviews
 
     @NonNull
     private final IndicatorDotView startDot;
@@ -58,9 +77,13 @@ public class IndicatorDotPathView extends ViewGroup {
     private final DotPathSegment endPathSegment;
     /** Portion of the path that grows from where startPathDot and endPathDot meet. */
     @NonNull
-    private final ImageView pathCenter;
+    private final ImageView centerSegment;
     @NonNull
-    private final ShapeDrawable centerPathShape = new ShapeDrawable(new RectShape());;
+    private final ShapeDrawable centerPathShape = new ShapeDrawable(new RectShape());
+
+    //endregion
+
+    //region Constructors
 
     public IndicatorDotPathView(@NonNull Context context) {
         super(context);
@@ -74,8 +97,8 @@ public class IndicatorDotPathView extends ViewGroup {
         this.startPathSegment = new DotPathSegment(context);
         this.endPathSegment = new DotPathSegment(context);
 
-        this.pathCenter = new ImageView(context);
-        this.pathCenter.setImageDrawable(centerPathShape);
+        this.centerSegment = new ImageView(context);
+        this.centerSegment.setImageDrawable(centerPathShape);
 
         init(context, DEFAULT_DOT_COLOR);
     }
@@ -104,8 +127,8 @@ public class IndicatorDotPathView extends ViewGroup {
         this.startPathSegment = new DotPathSegment(context);
         this.endPathSegment = new DotPathSegment(context);
 
-        this.pathCenter = new ImageView(context);
-        this.pathCenter.setImageDrawable(centerPathShape);
+        this.centerSegment = new ImageView(context);
+        this.centerSegment.setImageDrawable(centerPathShape);
 
         init(context, DEFAULT_DOT_COLOR);
     }
@@ -122,11 +145,13 @@ public class IndicatorDotPathView extends ViewGroup {
         this.startPathSegment = new DotPathSegment(context);
         this.endPathSegment = new DotPathSegment(context);
 
-        this.pathCenter = new ImageView(context);
-        this.pathCenter.setImageDrawable(centerPathShape);
+        this.centerSegment = new ImageView(context);
+        this.centerSegment.setImageDrawable(centerPathShape);
 
         init(context, DEFAULT_DOT_COLOR);
     }
+
+    //endregion
 
     private void init(@NonNull Context context,
                       @ColorInt int dotColor) {
@@ -135,8 +160,8 @@ public class IndicatorDotPathView extends ViewGroup {
         addView(endDot, -1, layoutParams);
         addView(startPathSegment, -1, layoutParams);
         addView(endPathSegment, -1, layoutParams);
-        addView(pathCenter, -1, layoutParams);
-        pathCenter.setVisibility(GONE);
+        addView(centerSegment, -1, layoutParams);
+        centerSegment.setVisibility(GONE);
 
         setDotColor(dotColor);
         setDotPadding(dotPadding);
@@ -155,7 +180,7 @@ public class IndicatorDotPathView extends ViewGroup {
         startPathSegment.layout(left, top, left + dotDiameter, bottom);
 
         left += dotRadius;
-        pathCenter.layout(left, top, left + dotPadding + dotDiameter, bottom);
+        centerSegment.layout(left, top, left + dotPadding + dotDiameter, bottom);
 
         left += dotRadius + dotPadding;
         endDot.layout(left, top, left + dotDiameter, bottom);
@@ -175,7 +200,7 @@ public class IndicatorDotPathView extends ViewGroup {
         startPathSegment.measure(childWidthSpec, childHeightSpec);
         endDot.measure(childWidthSpec, childHeightSpec);
         endPathSegment.measure(childWidthSpec, childHeightSpec);
-        pathCenter.measure(childWidthSpec, childHeightSpec);
+        centerSegment.measure(childWidthSpec, childHeightSpec);
 
         // Calculate measurement for this view.
         final int width;
@@ -254,7 +279,20 @@ public class IndicatorDotPathView extends ViewGroup {
 
     //endregion
 
-    public Animator dotPathConnectionAnimator() {
+    public AnimatorSet connectPathAndRetreatAnimator(@PathDirection int pathDirection) {
+        final AnimatorSet animatorSet = new AnimatorSet();
+
+        final IndicatorDotView fromDot = pathDirection == PATH_DIRECTION_RIGHT ? startDot : endDot;
+        final IndicatorDotView toDot = pathDirection == PATH_DIRECTION_LEFT ? startDot : endDot;
+        animatorSet.playSequentially(connectPathSegmentsAnimator(),
+                retreatConnectedPathAnimator(fromDot, toDot));
+
+        return animatorSet;
+    }
+
+    //region Dot connection animation
+
+    private Animator connectPathSegmentsAnimator() {
         final Rect startSegmentBounds = viewRectInNeighborCoords(startPathSegment, endPathSegment);
         final Rect endSegmentBounds = viewRectInNeighborCoords(endPathSegment, startPathSegment);
 
@@ -273,20 +311,26 @@ public class IndicatorDotPathView extends ViewGroup {
                 .stretchAnimator(PATH_STRETCH_ANIM_DURATION, endSegmentToX, endSegmentToY);
 
         final AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(startSegmentAnimator, endSegmentAnimator, centerPathAnimator());
+        animatorSet.playTogether(startSegmentAnimator, endSegmentAnimator, centerSegmentGrowAnimator());
         return animatorSet;
     }
 
-    private Animator centerPathAnimator() {
+    /**
+     * Animation: fill out the connecting center dot path to form a straight path between the two
+     * dots.
+     *
+     * @return An animator that grows pathCenter to the appropriate height.
+     */
+    private Animator centerSegmentGrowAnimator() {
         final float fromScale = 0f, toScale = 1f;
 
         ObjectAnimator growAnimator;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             final PropertyValuesHolder scaleYProperty = PropertyValuesHolder
                     .ofFloat(View.SCALE_Y, fromScale, toScale);
-            growAnimator = ObjectAnimator.ofPropertyValuesHolder(pathCenter, scaleYProperty);
+            growAnimator = ObjectAnimator.ofPropertyValuesHolder(centerSegment, scaleYProperty);
         } else {
-            growAnimator = ObjectAnimator.ofFloat(pathCenter, "scaleY", fromScale, toScale);
+            growAnimator = ObjectAnimator.ofFloat(centerSegment, "scaleY", fromScale, toScale);
         }
         // Start growing when the two ends of the path meet in the middle.
         final long animationDuration = PATH_STRETCH_ANIM_DURATION / 2;
@@ -297,7 +341,7 @@ public class IndicatorDotPathView extends ViewGroup {
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
-                pathCenter.setVisibility(VISIBLE);
+                centerSegment.setVisibility(VISIBLE);
             }
         });
 
@@ -305,6 +349,8 @@ public class IndicatorDotPathView extends ViewGroup {
     }
 
     /**
+     * Convert the coordinates of one of this view's subviews into the coordinate space of one of
+     * this view's other subviews.
      *
      * @param view The view whose bounds to offset into neighbor's coords.
      * @param neighbor The view into whose coordinate space to offset view's bounds.
@@ -318,6 +364,94 @@ public class IndicatorDotPathView extends ViewGroup {
         return bounds;
     }
 
+    //endregion
+
+    //region Retreat animation
+
+    private Animator retreatConnectedPathAnimator(@NonNull IndicatorDotView fromDot,
+                                                  @NonNull IndicatorDotView toDot) {
+        Rect endDotBounds = viewRectInNeighborCoords(toDot, fromDot);
+        float toX = endDotBounds.left;
+        float toY = endDotBounds.top;
+        final Animator dotSlideAnimator = fromDot
+                .slideAnimator(toX, toY, PATH_RETREAT_ANIM_DURATION);
+
+        endDotBounds = viewRectInNeighborCoords(toDot, centerSegment);
+        toX = endDotBounds.centerX() <= 0 ? 0 : centerSegment.getWidth();
+        toY = endDotBounds.centerY() <= 0 ? 0 : centerSegment.getHeight();
+        final Animator pathRetreatAnimator =
+                retreatCenterSegmentAnimator(toX, toY, PATH_RETREAT_ANIM_DURATION);
+
+        final AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(dotSlideAnimator, pathRetreatAnimator);
+        return animatorSet;
+    }
+
+    private Animator retreatCenterSegmentAnimator(final float toX,
+                                               final float toY,
+                                               final long animationDuration) {
+        final float originalScale = 1, scaleX = 0, scaleY = 1;
+
+        final Animator animator = scaleAnimator(centerSegment, originalScale, scaleX, scaleY);
+
+        // Choose the corner of the view farthest from the destination location.
+        final float originalPivotX = getPivotX();
+        final float originalPivotY = getPivotY();
+        final float pivotX = Math.max(0,  Math.min(toX, centerSegment.getWidth()));
+        final float pivotY = Math.max(0, Math.min(toY, centerSegment.getHeight()));
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                centerSegment.setPivotX(pivotX);
+                centerSegment.setPivotY(pivotY);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // Reset values.
+                centerSegment.setVisibility(INVISIBLE);
+                centerSegment.setScaleX(originalScale);
+                centerSegment.setScaleY(originalScale);
+                centerSegment.setPivotX(originalPivotX);
+                centerSegment.setPivotY(originalPivotY);
+            }
+        });
+        animator.setDuration(animationDuration);
+
+        return animator;
+    }
+
+
+    //endregion
+
+    private static Animator scaleAnimator(final View view,
+                                          float originalScale,
+                                          float scaleX,
+                                          float scaleY) {
+        final Animator animator;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            final PropertyValuesHolder scaleXProperty =
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, originalScale, scaleX);
+            final PropertyValuesHolder scaleYProperty =
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, originalScale, scaleY);
+            animator = ObjectAnimator.ofPropertyValuesHolder(view, scaleXProperty, scaleYProperty);
+        } else {
+            final Animator scaleXAnimator =
+                    ObjectAnimator.ofFloat(view, "scaleX", originalScale, scaleX);
+            final Animator scaleYAnimator =
+                    ObjectAnimator.ofFloat(view, "scaleY", originalScale, scaleY);
+
+            final AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
+            animator = animatorSet;
+        }
+        return animator;
+    }
+
+    /**
+     * An IndicatorDotView that can stretch one of its ends to another location on the screen.
+     */
     private static class DotPathSegment extends IndicatorDotView {
 
         DotPathSegment(@NonNull Context context) {
@@ -327,13 +461,15 @@ public class IndicatorDotPathView extends ViewGroup {
         //region Path creation
 
         /**
+         * Animation: Stretch one end of this dot toward another location on the screen.
+         * When the animation is finished, reset this dot to its original size and position and
+         * make it invisible.
          *
          * @param animationDuration How long the animation should take, in milliseconds.
          * @param toX Where to stretch this view horizontally in this view's coordinate space.
          * @param toY Where to stretch this view vertically in this view's coordinate space.
          * @return An animator.
          */
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
         public Animator stretchAnimator(long animationDuration, final float toX, final float toY) {
             // Since the provided coordinates are in this view's coordinate space, the absolute distance
             // to the coordinate is the value of the coordinate itself.
@@ -344,30 +480,26 @@ public class IndicatorDotPathView extends ViewGroup {
             final float scaleY = distanceY / getHeight();
             final float originalScale = 1;
 
-            Animator animator;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                final PropertyValuesHolder scaleXProperty =
-                        PropertyValuesHolder.ofFloat(View.SCALE_X, originalScale, scaleX);
-                final PropertyValuesHolder scaleYProperty =
-                        PropertyValuesHolder.ofFloat(View.SCALE_Y, originalScale, scaleY);
-                animator = ObjectAnimator.ofPropertyValuesHolder(this, scaleXProperty, scaleYProperty);
-            } else {
-                final Animator scaleXAnimator =
-                        ObjectAnimator.ofFloat(this, "scaleX", originalScale, scaleX);
-                final Animator scaleYAnimator =
-                        ObjectAnimator.ofFloat(this, "scaleY", originalScale, scaleY);
-
-                final AnimatorSet animatorSet = new AnimatorSet();
-                animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
-                animator = animatorSet;
-            }
+            final Animator animator = scaleAnimator(this, originalScale, scaleX, scaleY);
 
             animator.setDuration(animationDuration);
 
+            final float originalPivotX = getPivotX();
+            final float originalPivotY = getPivotY();
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
+                    setVisibility(VISIBLE);
                     setStretchAnimatorPivot(toX, toY);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    // Reset values.
+                    setVisibility(INVISIBLE);
+                    setScaleX(originalScale);
+                    setScaleY(originalScale);
+                    setStretchAnimatorPivot(originalPivotX, originalPivotY);
                 }
             });
 
