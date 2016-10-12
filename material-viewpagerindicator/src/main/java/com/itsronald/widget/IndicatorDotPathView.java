@@ -113,7 +113,9 @@ public class IndicatorDotPathView extends ViewGroup {
         this.dotPadding = dotPadding;
         this.dotRadius = dotRadius;
 
-        init(context, dotColor);
+        setDotColor(dotColor);
+        setDotPadding(dotPadding);
+        setDotRadius(dotRadius);
     }
 
     public IndicatorDotPathView(@NonNull Context context, @Nullable AttributeSet attrs) {
