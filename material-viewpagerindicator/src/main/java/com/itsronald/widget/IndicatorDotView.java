@@ -29,6 +29,8 @@ import android.widget.ImageView;
 class IndicatorDotView extends ImageView {
 
     //region Constants
+    @NonNull
+    private static final String TAG = "IndicatorDotView";
 
     @Dimension
     static final int DEFAULT_DOT_RADIUS_DIP = 4;
@@ -115,6 +117,8 @@ class IndicatorDotView extends ImageView {
 
     //endregion
 
+    //region Reveal animation
+
     /**
      * Start a Material reveal animation of this view with no delay.
      */
@@ -168,7 +172,6 @@ class IndicatorDotView extends ImageView {
      *
      * @see #startAnimatorReveal(int, int, long, long)
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private Animator revealAnimator(int centerX, int centerY) {
         final Animator animator;
         /*
@@ -219,4 +222,6 @@ class IndicatorDotView extends ImageView {
         setVisibility(VISIBLE);
         startAnimation(scaleAnimation);
     }
+
+    //endregion
 }
