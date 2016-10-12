@@ -338,7 +338,7 @@ public class ViewPagerIndicator extends ViewGroup {
                 dotPaths.add(newPath);
                 addViewInLayout(newPath, -1, layoutParams, true);
             }
-        } else if (pathCount > newPathCount) {
+        } else if (pathCount > newPathCount && newPathCount >= 0) {
             final List<IndicatorDotPathView> pathsToRemove = dotPaths
                     .subList(newPathCount, pathCount);
             for (IndicatorDotPathView dotPath : pathsToRemove) {
