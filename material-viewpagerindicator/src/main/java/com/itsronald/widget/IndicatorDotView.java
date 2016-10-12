@@ -1,6 +1,7 @@
 package com.itsronald.widget;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -19,8 +20,6 @@ import android.support.annotation.Px;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 
 /**
@@ -139,48 +138,26 @@ class IndicatorDotView extends ImageView {
     //region Reveal animation
 
     /**
-     * Start a Material reveal animation of this view with no delay.
-     */
-    void reveal() {
-        reveal(0);
-    }
-
-    /**
-     * Start a Material reveal animation of this view with a specified start delay.
+     * Animation: Reveal this view, starting from the center.
      *
-     * @param startDelay The start delay for the animation, in milliseconds.
+     * @return An animator that reveals this view from its center.
      */
-    void reveal(long startDelay) {
+    @NonNull
+    Animator revealAnimator() {
         final int centerX = getWidth() / 2;
         final int centerY = getHeight() / 2;
         final long animationDuration = getContext().getResources()
                 .getInteger(android.R.integer.config_shortAnimTime);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            startAnimatorReveal(centerX, centerY, animationDuration, startDelay);
-        } else {
-            startScaleReveal(centerX, centerY, animationDuration);
-        }
-    }
-
-    /**
-     * Start a reveal animation of this view.
-     *
-     * @param centerX           The X point from which the animation starts.
-     * @param centerY           The Y point from which the animation starts.
-     * @param animationDuration How long the animation should last.
-     * @param startDelay        The start delay for the animation, in milliseconds.
-     * @see #reveal()
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void startAnimatorReveal(int centerX, int centerY, long animationDuration, long startDelay) {
         final Animator animator = revealAnimator(centerX, centerY);
-
         animator.setDuration(animationDuration);
-        animator.setStartDelay(startDelay);
-
-        setVisibility(VISIBLE);
-        animator.start();
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                setVisibility(VISIBLE);
+            }
+        });
+        return animator;
     }
 
     /**
@@ -189,8 +166,9 @@ class IndicatorDotView extends ImageView {
      * @param centerX The X point from which the animation starts.
      * @param centerY The Y point from which the animation starts.
      *
-     * @see #startAnimatorReveal(int, int, long, long)
+     * @see #revealAnimator()
      */
+    @NonNull
     private Animator revealAnimator(int centerX, int centerY) {
         final Animator animator;
         /*
@@ -199,47 +177,25 @@ class IndicatorDotView extends ImageView {
          * Since this view is already circular, a scale animation effectively simulates the
          * material circular reveal on earlier API versions.
          */
+        final int oldScale = 0, newScale = 1;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             animator = ViewAnimationUtils
                     .createCircularReveal(this, centerX, centerY, 0, dotRadius);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            final PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 0, 1);
-            final PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0, 1);
+            final PropertyValuesHolder scaleX = PropertyValuesHolder
+                    .ofFloat(View.SCALE_X, oldScale, newScale);
+            final PropertyValuesHolder scaleY = PropertyValuesHolder
+                    .ofFloat(View.SCALE_Y, oldScale, newScale);
             animator = ObjectAnimator.ofPropertyValuesHolder(this, scaleX, scaleY);
         } else {
-            final Animator scaleX = ObjectAnimator.ofFloat(this, "scaleX", 0, 1);
-            final Animator scaleY = ObjectAnimator.ofFloat(this, "scaleY", 0, 1);
+            final Animator scaleX = ObjectAnimator.ofFloat(this, "scaleX", oldScale, newScale);
+            final Animator scaleY = ObjectAnimator.ofFloat(this, "scaleY", oldScale, newScale);
 
             final AnimatorSet animatorSet = new AnimatorSet();
             animatorSet.playTogether(scaleX, scaleY);
             animator = animatorSet;
         }
         return animator;
-    }
-
-    /**
-     * Start a fallback reveal animation of this view for API versions < Honeycomb.
-     * <p>
-     * It looks the same as the Material Circular Reveal animation (because this is already
-     * a circle) but is fractionally slower to start.
-     *
-     * @param centerX           The X point from which the animation starts.
-     * @param centerY           The Y point from which the animation starts.
-     * @param animationDuration How long the animation should last.
-     * @see #reveal()
-     */
-    private void startScaleReveal(int centerX, int centerY, long animationDuration) {
-        ScaleAnimation scaleAnimation = new ScaleAnimation(0f, 1f, 0f, 1f, centerX, centerY);
-
-        scaleAnimation.setFillBefore(true);
-        scaleAnimation.setFillAfter(true);
-        scaleAnimation.setFillEnabled(true);
-
-        scaleAnimation.setDuration(animationDuration);
-        scaleAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
-
-        setVisibility(VISIBLE);
-        startAnimation(scaleAnimation);
     }
 
     //endregion
@@ -255,6 +211,7 @@ class IndicatorDotView extends ImageView {
      *            coordinate space.
      * @return An animator that will move this view to (toX, toY) when started.
      */
+    @NonNull
     Animator slideAnimator(final float toX, final float toY, final long animationDuration) {
         final float fromTranslation = 0;
 
