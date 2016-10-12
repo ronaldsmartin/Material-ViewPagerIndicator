@@ -54,7 +54,9 @@ public class ViewPagerIndicator extends ViewGroup {
     static final int DEFAULT_DOT_PADDING_DIP = 6;
 
     @NonNull
-    private List<IndicatorDotView> indicatorDots = new ArrayList<>();
+    private final List<IndicatorDotView> indicatorDots = new ArrayList<>();
+    @NonNull
+    private final List<IndicatorDotPathView> dotPaths = new ArrayList<>();
     private IndicatorDotView selectedDot;   // @NonNull, but initialized in init().
     @Px
     private int dotPadding;
@@ -154,6 +156,9 @@ public class ViewPagerIndicator extends ViewGroup {
         selectedDot.measure(childWidthSpec, childHeightSpec);
         for (IndicatorDotView indicatorDot : indicatorDots) {
             indicatorDot.measure(childWidthSpec, childHeightSpec);
+        }
+        for (IndicatorDotPathView dotPath : dotPaths) {
+            dotPath.measure(childWidthSpec, childHeightSpec);
         }
 
         // Calculate measurement for this view.
@@ -309,12 +314,37 @@ public class ViewPagerIndicator extends ViewGroup {
             indicatorDots.removeAll(removedDots);
         }
 
+        // Make sure there is one fewer path than there are dots.
+        updatePathCount(newDotCount - 1);
+
         // Add selected dot to layout.
         if (newDotCount > 0) {
             addViewInLayout(selectedDot, -1, layoutParams, true);
         } else {
             removeViewInLayout(selectedDot);
             Log.d(TAG, "Removing selectedDot");
+        }
+    }
+
+    private void updatePathCount(final int newPathCount) {
+        int pathCount = dotPaths.size();
+        if (pathCount < newPathCount) {
+            final LayoutParams layoutParams =
+                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            while (pathCount++ != newPathCount) {
+                final IndicatorDotPathView newPath = new IndicatorDotPathView(
+                        getContext(), getUnselectedDotColor(), getDotPadding(), getDotRadius()
+                );
+                dotPaths.add(newPath);
+                addViewInLayout(newPath, -1, layoutParams, true);
+            }
+        } else if (pathCount > newPathCount) {
+            final List<IndicatorDotPathView> pathsToRemove = dotPaths
+                    .subList(newPathCount, pathCount);
+            for (IndicatorDotPathView dotPath : pathsToRemove) {
+                removeViewInLayout(dotPath);
+            }
+            dotPaths.removeAll(pathsToRemove);
         }
     }
 
