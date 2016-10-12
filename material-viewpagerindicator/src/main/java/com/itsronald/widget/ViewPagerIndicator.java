@@ -51,7 +51,7 @@ public class ViewPagerIndicator extends ViewGroup {
 
     //region Indicator Dots
     @Dimension
-    private static final int DEFAULT_DOT_PADDING_DIP = 6;
+    static final int DEFAULT_DOT_PADDING_DIP = 6;
 
     @NonNull
     private List<IndicatorDotView> indicatorDots = new ArrayList<>();
