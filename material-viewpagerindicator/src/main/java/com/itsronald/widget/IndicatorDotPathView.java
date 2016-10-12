@@ -32,8 +32,9 @@ import static com.itsronald.widget.ViewPagerIndicator.DEFAULT_DOT_PADDING_DIP;
 /**
  * Reproduces the material animation in which the following occurs:
  *
- * 1. Two dots join to form a path.
- * 2. Starting from one of the original two dot positions, the path shinks toward the other dot.
+ * 1. Two dots join to form a path. ("Connect path segments")
+ * 2. Starting from one of the original two dot positions, the path shrinks toward the other dot.
+ *    ("Retreat path")
  * 3. Only one of the original two dots remains.
  *
  * Before starting this view's animation, its two dots should invisibly replace two adjacent dots
@@ -155,7 +156,8 @@ public class IndicatorDotPathView extends ViewGroup {
 
     private void init(@NonNull Context context,
                       @ColorInt int dotColor) {
-        final LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final LayoutParams layoutParams =
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         addView(startDot, -1, layoutParams);
         addView(endDot, -1, layoutParams);
         addView(startPathSegment, -1, layoutParams);
@@ -427,8 +429,8 @@ public class IndicatorDotPathView extends ViewGroup {
     }
 
     private Animator retreatCenterSegmentAnimator(final float toX,
-                                               final float toY,
-                                               final long animationDuration) {
+                                                  final float toY,
+                                                  final long animationDuration) {
         final float originalScale = 1, scaleX = 0, scaleY = 1;
 
         final Animator animator = scaleAnimator(centerSegment, originalScale, scaleX, scaleY);
