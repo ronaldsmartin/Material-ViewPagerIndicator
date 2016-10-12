@@ -107,6 +107,16 @@ class IndicatorDotView extends ImageView {
     }
 
     /**
+     * Get the current dot color for this view.
+     *
+     * @return The current color value for the dot.
+     */
+    @ColorInt
+    int getColor() {
+        return dot.getPaint().getColor();
+    }
+
+    /**
      * Set a new dot color for this view.
      *
      * @param color The new color for the dot.
