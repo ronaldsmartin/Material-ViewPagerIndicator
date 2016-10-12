@@ -333,6 +333,7 @@ public class ViewPagerIndicator extends ViewGroup {
                 final IndicatorDotPathView newPath = new IndicatorDotPathView(
                         getContext(), getUnselectedDotColor(), getDotPadding(), getDotRadius()
                 );
+                newPath.setVisibility(INVISIBLE);
                 dotPaths.add(newPath);
                 addViewInLayout(newPath, -1, layoutParams, true);
             }
@@ -442,17 +443,23 @@ public class ViewPagerIndicator extends ViewGroup {
     }
 
     @Nullable
-    private Animator pageChangeAnimator(int lastPageIndex, int newPageIndex) {
+    private Animator pageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
+        Log.d(TAG, "Building animator. lastPageIndex = " + lastPageIndex + " newPageIndex = " + newPageIndex);
         final IndicatorDotPathView dotPath = getDotPathForPageChange(lastPageIndex, newPageIndex);
         final IndicatorDotView lastDot = getDotForPage(lastPageIndex);
 
-        if (dotPath == null || lastDot == null) return null;
+        if (dotPath == null || lastDot == null) {
+            final String warning = dotPath == null ? "dotPath is null!" : "lastDot is null!";
+            Log.w(TAG, warning);
+            return null;
+        }
 
         final int pathDirection = getPathDirectionForPageChange(lastPageIndex, newPageIndex);
         final Animator pathAnimator = dotPath.connectPathAndRetreatAnimator(pathDirection);
         pathAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
+                dotPath.setVisibility(VISIBLE);
                 lastDot.setVisibility(INVISIBLE);
             }
         });
@@ -462,9 +469,14 @@ public class ViewPagerIndicator extends ViewGroup {
                 selectedDotSlideAnimator(newPageIndex, dotSlideDuration, dotSlideDuration);
 
         final Animator dotRevealAnimator = lastDot.revealAnimator();
+        dotRevealAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                dotPath.setVisibility(INVISIBLE);
+            }
+        });
 
         final AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(pathAnimator);
         animatorSet.playSequentially(pathAnimator, dotRevealAnimator);
 
         return animatorSet;
