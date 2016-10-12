@@ -283,6 +283,7 @@ public class IndicatorDotPathView extends ViewGroup {
 
     //endregion
 
+    @NonNull
     public AnimatorSet connectPathAndRetreatAnimator(@PathDirection int pathDirection) {
         final AnimatorSet animatorSet = new AnimatorSet();
 
@@ -296,6 +297,7 @@ public class IndicatorDotPathView extends ViewGroup {
 
     //region Dot connection animation
 
+    @NonNull
     private Animator connectPathSegmentsAnimator() {
         final Rect startSegmentBounds = viewRectInNeighborCoords(startPathSegment, endPathSegment);
         final Rect endSegmentBounds = viewRectInNeighborCoords(endPathSegment, startPathSegment);
@@ -333,10 +335,11 @@ public class IndicatorDotPathView extends ViewGroup {
      *
      * @return An animator that grows pathCenter to the appropriate height.
      */
+    @NonNull
     private Animator centerSegmentGrowAnimator() {
         final float fromScale = 0f, toScale = 1f;
 
-        ObjectAnimator growAnimator;
+        final ObjectAnimator growAnimator;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             final PropertyValuesHolder scaleYProperty = PropertyValuesHolder
                     .ofFloat(View.SCALE_Y, fromScale, toScale);
@@ -368,6 +371,7 @@ public class IndicatorDotPathView extends ViewGroup {
      * @param neighbor The view into whose coordinate space to offset view's bounds.
      * @return The bounds of view in neighbor's coordinate space.
      */
+    @NonNull
     private Rect viewRectInNeighborCoords(@NonNull View view, @NonNull View neighbor) {
         final Rect bounds = new Rect();
         view.getDrawingRect(bounds);
@@ -380,6 +384,7 @@ public class IndicatorDotPathView extends ViewGroup {
 
     //region Retreat animation
 
+    @NonNull
     private Animator retreatConnectedPathAnimator(@NonNull IndicatorDotView fromDot,
                                                   @NonNull IndicatorDotView toDot) {
         Rect endDotBounds = viewRectInNeighborCoords(toDot, fromDot);
@@ -409,6 +414,7 @@ public class IndicatorDotPathView extends ViewGroup {
      * @param animationDuration How long the movement should take, in milliseconds.
      * @return An animator that moves the dot when started.
      */
+    @NonNull
     private Animator retreatDotAnimator(@NonNull final IndicatorDotView retreatingDot,
                                         final float toX,
                                         final float toY,
@@ -430,6 +436,7 @@ public class IndicatorDotPathView extends ViewGroup {
         return dotSlideAnimator;
     }
 
+    @NonNull
     private Animator retreatCenterSegmentAnimator(final float toX,
                                                   final float toY,
                                                   final long animationDuration) {
@@ -468,6 +475,7 @@ public class IndicatorDotPathView extends ViewGroup {
 
     //endregion
 
+    @NonNull
     private static Animator scaleAnimator(final View view,
                                           float originalScale,
                                           float scaleX,
@@ -513,6 +521,7 @@ public class IndicatorDotPathView extends ViewGroup {
          * @param toY Where to stretch this view vertically in this view's coordinate space.
          * @return An animator.
          */
+        @NonNull
         public Animator stretchAnimator(long animationDuration, final float toX, final float toY) {
             // Since the provided coordinates are in this view's coordinate space, the absolute distance
             // to the coordinate is the value of the coordinate itself.
