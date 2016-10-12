@@ -312,6 +312,14 @@ public class IndicatorDotPathView extends ViewGroup {
 
         final AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(startSegmentAnimator, endSegmentAnimator, centerSegmentGrowAnimator());
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                startDot.setVisibility(VISIBLE);
+                endDot.setVisibility(VISIBLE);
+            }
+        });
+
         return animatorSet;
     }
 
@@ -373,8 +381,8 @@ public class IndicatorDotPathView extends ViewGroup {
         Rect endDotBounds = viewRectInNeighborCoords(toDot, fromDot);
         float toX = endDotBounds.left;
         float toY = endDotBounds.top;
-        final Animator dotSlideAnimator = fromDot
-                .slideAnimator(toX, toY, PATH_RETREAT_ANIM_DURATION);
+        final Animator dotRetreatAnimator =
+                retreatDotAnimator(fromDot, toX, toY, PATH_RETREAT_ANIM_DURATION);
 
         endDotBounds = viewRectInNeighborCoords(toDot, centerSegment);
         toX = endDotBounds.centerX() <= 0 ? 0 : centerSegment.getWidth();
@@ -383,8 +391,39 @@ public class IndicatorDotPathView extends ViewGroup {
                 retreatCenterSegmentAnimator(toX, toY, PATH_RETREAT_ANIM_DURATION);
 
         final AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(dotSlideAnimator, pathRetreatAnimator);
+        animatorSet.playTogether(dotRetreatAnimator, pathRetreatAnimator);
         return animatorSet;
+    }
+
+    /**
+     * Animation: Retreat an indicator dot to a specified position.
+     * After the animation, the dot will be invisibly moved back to its original position.
+     *
+     * @param retreatingDot The dot that should be animated.
+     * @param toX The horizontal coordinate to which the dot should move (in its own coordinate space).
+     * @param toY The vertical coordinate to which the dot should move (in its own coordinate space).
+     * @param animationDuration How long the movement should take, in milliseconds.
+     * @return An animator that moves the dot when started.
+     */
+    private Animator retreatDotAnimator(@NonNull final IndicatorDotView retreatingDot,
+                                        final float toX,
+                                        final float toY,
+                                        final long animationDuration) {
+        final Animator dotSlideAnimator = retreatingDot
+                .slideAnimator(toX, toY, animationDuration);
+
+        final float originalTranslationX = retreatingDot.getTranslationX();
+        final float originalTranslationY = retreatingDot.getTranslationY();
+        dotSlideAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                retreatingDot.setVisibility(INVISIBLE);
+                retreatingDot.setTranslationX(originalTranslationX);
+                retreatingDot.setTranslationY(originalTranslationY);
+            }
+        });
+
+        return dotSlideAnimator;
     }
 
     private Animator retreatCenterSegmentAnimator(final float toX,
