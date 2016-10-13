@@ -72,7 +72,7 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
+                android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:onClick="onSimpleXmlExampleCardClick"
                 app:cardUseCompatPadding="true">
@@ -106,7 +106,7 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:onClick="onSimpleJavaExampleCardClick"
                 app:cardUseCompatPadding="true">
