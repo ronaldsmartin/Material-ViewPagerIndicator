@@ -35,8 +35,17 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
+    //region OnClick methods
+
     public void onSimpleXmlExampleCardClick(View view) {
         final Intent intent = new Intent(this, SimpleXmlExampleActivity.class);
         startActivity(intent);
     }
+
+    public void onSimpleJavaExampleCardClick(View view) {
+        final Intent intent = new Intent(this, SimpleJavaExampleActivity.class);
+        startActivity(intent);
+    }
+
+    //endregion
 }

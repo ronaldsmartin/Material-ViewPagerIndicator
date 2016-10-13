@@ -21,12 +21,26 @@
 
     <string name="title_activity_main">Indicator Demo</string>
 
+    <!-- Simple XML Example -->
     <string name="simple_xml_example_card_title">Simple XML Example</string>
     <string name="simple_xml_example_card_subtitle">Minimal configuration</string>
     <string name="simple_xml_example_card_text">
-        "To use ViewPagerIndicator, all you need to do is drop it into your ViewPager.\n\n"
+        "To use ViewPagerIndicator, all you need to do is drop it into your ViewPager layout.\n\n"
 
         "Add the indicator as a direct child of the ViewPager in your XML layout and set "
         "layout_gravity to position the indicator."
+    </string>
+
+    <!-- Simple Java Example -->
+    <string name="simple_java_example_card_title">Simple Java Example</string>
+    <string name="simple_java_example_card_subtitle">When XML doesn\'t meet your needs</string>
+    <string name="simple_java_example_card_text">
+        "To use ViewPagerIndicator from Java, all you need to do is add the view to your ViewPager.\n\n"
+
+        "You will need to create a LayoutParams object to position the indicator when adding it."
+        "ViewPagerIndicator respects most standard attributes such as layout gravity and padding.\n\n"
+
+        "Please note that due to the implementation of the Support ViewPager widget, the "
+        "indicator\'s width will be fixed to match_parent, even if you specify wrap_content."
     </string>
 </resources>
