@@ -1,7 +1,8 @@
 # Material-ViewPagerIndicator
 
-[![API](https://img.shields.io/badge/API-11%2B-green.svg?style=flat)](https://android-arsenal.com/api?level=11)
-[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/LICENSE.md)
+[![Build Status](https://travis-ci.org/ronaldsmartin/Material-ViewPagerIndicator.svg?branch=master)](https://travis-ci.org/ronaldsmartin/Material-ViewPagerIndicator)
+[![API 11+](https://img.shields.io/badge/API-11%2B-green.svg?style=flat)](https://android-arsenal.com/api?level=11)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/LICENSE.md)
 
 A page indicator for the [Android Support Library v4's](https://developer.android.com/topic/libraries/support-library/features.html#v4-core-ui) [`ViewPager`](https://developer.android.com/reference/android/support/v4/view/ViewPager.html) widget with Material Design ink animations.
 
