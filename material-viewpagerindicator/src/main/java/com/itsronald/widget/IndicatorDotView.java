@@ -213,20 +213,21 @@ class IndicatorDotView extends ImageView {
      */
     @NonNull
     Animator slideAnimator(final float toX, final float toY, final long animationDuration) {
-        final float fromTranslation = 0;
+        final float fromX = getTranslationX();
+        final float fromY = getTranslationY();
 
         final Animator animator;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             final PropertyValuesHolder translationX = PropertyValuesHolder
-                    .ofFloat(View.TRANSLATION_X, fromTranslation, toX);
+                    .ofFloat(View.TRANSLATION_X, fromX, toX);
             final PropertyValuesHolder translationY = PropertyValuesHolder
-                    .ofFloat(View.TRANSLATION_Y, fromTranslation, toY);
+                    .ofFloat(View.TRANSLATION_Y, fromY, toY);
             animator = ObjectAnimator.ofPropertyValuesHolder(this, translationX, translationY);
         } else {
             final Animator translationXAnimator = ObjectAnimator
-                    .ofFloat(this, "translationX", fromTranslation, toX);
+                    .ofFloat(this, "translationX", fromX, toX);
             final Animator translationYAnimator = ObjectAnimator
-                    .ofFloat(this, "translationY", fromTranslation, toY);
+                    .ofFloat(this, "translationY", fromY, toY);
 
             final AnimatorSet animatorSet = new AnimatorSet();
             animatorSet.playTogether(translationXAnimator, translationYAnimator);
