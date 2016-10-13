@@ -45,7 +45,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                app:subtitle="@string/subtitle_activity_main"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -92,9 +93,26 @@
                         android:text="@string/simple_xml_example_card_subtitle"
                         style="@style/CardText.Subtitle"/>
 
+                    <Button
+                        android:id="@+id/btn_simple_xml_action_view_activity"
+                        android:layout_below="@+id/text_simple_xml_subtitle"
+                        android:text="@string/simple_xml_action_view_activity"
+                        android:onClick="onSimpleXmlExampleActionViewActivity"
+                        style="@style/CardAction"/>
+
+                    <Button
+                        android:id="@+id/btn_simple_xml_action_view_layout"
+                        android:layout_alignTop="@+id/btn_simple_xml_action_view_activity"
+                        android:layout_toRightOf="@+id/btn_simple_xml_action_view_activity"
+                        android:layout_toEndOf="@+id/btn_simple_xml_action_view_activity"
+                        android:text="@string/simple_xml_action_view_layout"
+                        android:onClick="onSimpleXmlExampleActionViewLayout"
+                        style="@style/CardAction"/>
+
+
                     <TextView
                         android:id="@+id/text_simple_xml_description"
-                        android:layout_below="@+id/text_simple_xml_subtitle"
+                        android:layout_below="@+id/btn_simple_xml_action_view_activity"
                         android:text="@string/simple_xml_example_card_text"
                         style="@style/CardText.Body"/>
 
@@ -126,9 +144,25 @@
                         android:text="@string/simple_java_example_card_subtitle"
                         style="@style/CardText.Subtitle"/>
 
+                    <Button
+                        android:id="@+id/btn_simple_java_action_view_activity"
+                        android:layout_below="@+id/text_simple_java_subtitle"
+                        android:text="@string/simple_java_action_view_activity"
+                        android:onClick="onSimpleJavaExampleActionViewActivity"
+                        style="@style/CardAction"/>
+
+                    <Button
+                        android:id="@+id/btn_simple_java_action_view_layout"
+                        android:layout_alignTop="@+id/btn_simple_java_action_view_activity"
+                        android:layout_toRightOf="@+id/btn_simple_java_action_view_activity"
+                        android:layout_toEndOf="@+id/btn_simple_java_action_view_activity"
+                        android:text="@string/simple_java_action_view_layout"
+                        android:onClick="onSimpleJavaExampleActionViewLayout"
+                        style="@style/CardAction"/>
+
                     <TextView
                         android:id="@+id/text_simple_java_description"
-                        android:layout_below="@+id/text_simple_java_subtitle"
+                        android:layout_below="@+id/btn_simple_java_action_view_activity"
                         android:text="@string/simple_java_example_card_text"
                         style="@style/CardText.Body"/>
 

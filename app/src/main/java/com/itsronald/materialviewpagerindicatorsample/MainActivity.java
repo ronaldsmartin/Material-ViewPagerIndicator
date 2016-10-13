@@ -43,9 +43,25 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onSimpleXmlExampleActionViewActivity(View view) {
+
+    }
+
+    public void onSimpleXmlExampleActionViewLayout(View view) {
+
+    }
+
     public void onSimpleJavaExampleCardClick(View view) {
         final Intent intent = new Intent(this, SimpleJavaExampleActivity.class);
         startActivity(intent);
+    }
+
+    public void onSimpleJavaExampleActionViewActivity(View view) {
+
+    }
+
+    public void onSimpleJavaExampleActionViewLayout(View view) {
+
     }
 
     public void onFABClick(View view) {
