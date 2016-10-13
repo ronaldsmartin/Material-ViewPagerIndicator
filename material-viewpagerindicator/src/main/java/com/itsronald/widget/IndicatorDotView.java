@@ -32,9 +32,9 @@ class IndicatorDotView extends ImageView {
     private static final String TAG = "IndicatorDotView";
 
     @Dimension
-    static final int DEFAULT_DOT_RADIUS_DIP = 4;
+    static final int DEFAULT_DOT_RADIUS_DIP = 3;
     @ColorInt
-    static final int DEFAULT_DOT_COLOR = Color.GRAY;
+    static final int DEFAULT_DOT_COLOR = Color.LTGRAY;
     @ColorInt
     static final int DEFAULT_UNSELECTED_DOT_COLOR = DEFAULT_DOT_COLOR;
     @ColorInt
