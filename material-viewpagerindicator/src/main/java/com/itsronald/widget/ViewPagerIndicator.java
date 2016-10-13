@@ -41,6 +41,8 @@ public class ViewPagerIndicator extends ViewGroup {
 
     @NonNull
     private static final String TAG = "ViewPagerIndicator";
+    
+    private static final long DOT_SLIDE_ANIM_DURATION = 150;    // 150 ms.
 
     //region ViewPager
 
@@ -475,7 +477,7 @@ public class ViewPagerIndicator extends ViewGroup {
             }
         });
 
-        final long dotSlideDuration = IndicatorDotPathView.PATH_STRETCH_ANIM_DURATION;
+        final long dotSlideDuration = DOT_SLIDE_ANIM_DURATION;
         final Animator selectedDotSlideAnimator =
                 selectedDotSlideAnimator(newPageIndex, dotSlideDuration, 0);
 
