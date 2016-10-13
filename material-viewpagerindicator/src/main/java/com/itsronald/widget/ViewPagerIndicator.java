@@ -538,6 +538,9 @@ public class ViewPagerIndicator extends ViewGroup {
         return animator;
     }
 
+    /**
+     * Watches the ViewPager for changes, updating the indicator as needed.
+     */
     private class PageListener extends DataSetObserver
             implements ViewPager.OnPageChangeListener, ViewPager.OnAdapterChangeListener {
 
@@ -636,11 +639,21 @@ public class ViewPagerIndicator extends ViewGroup {
         requestLayout();
     }
 
+    /**
+     * Get the current spacing between each indicator dot.
+     *
+     * @return The distance between each indicator dot, in pixels.
+     */
     @Px
     public int getDotPadding() {
         return dotPadding;
     }
 
+    /**
+     * Set the spacing between each indicator dot.
+     *
+     * @param newDotPadding The distance to use between each indicator dot, in pixels.
+     */
     public void setDotPadding(@Px int newDotPadding) {
         if (dotPadding == newDotPadding) return;
         if (newDotPadding < 0) newDotPadding = 0;
@@ -650,11 +663,21 @@ public class ViewPagerIndicator extends ViewGroup {
         requestLayout();
     }
 
+    /**
+     * Get the current radius of each indicator dot.
+     *
+     * @return The radius of each indicator dot, in pixels.
+     */
     @Px
     public int getDotRadius() {
         return dotRadius;
     }
 
+    /**
+     * Set the radius of each indicator dot.
+     *
+     * @param newRadius The new radius to use for each indicator dot.
+     */
     public void setDotRadius(@Px int newRadius) {
         if (dotRadius == newRadius) return;
         if (newRadius < 0) newRadius = 0;
@@ -667,11 +690,21 @@ public class ViewPagerIndicator extends ViewGroup {
         requestLayout();
     }
 
+    /**
+     * Get the current color for unselected indicator dots.
+     *
+     * @return The unselected dot color.
+     */
     @ColorInt
     public int getUnselectedDotColor() {
         return unselectedDotColor;
     }
 
+    /**
+     * Set the current color for unselected indicator dots.
+     *
+     * @param color The new unselected dot color to use.
+     */
     public void setUnselectedDotColor(@ColorInt int color) {
         unselectedDotColor = color;
         for (IndicatorDotView indicatordot : indicatorDots) {
@@ -680,11 +713,21 @@ public class ViewPagerIndicator extends ViewGroup {
         }
     }
 
+    /**
+     * Get the current color for selected indicator dots.
+     *
+     * @return The selected dot color.
+     */
     @ColorInt
     public int getSelectedDotColor() {
         return selectedDotColor;
     }
 
+    /**
+     * Set the current color for selected indicator dots.
+     *
+     * @param color The new selected dot color to use.
+     */
     public void setSelectedDotColor(@ColorInt int color) {
         selectedDotColor = color;
         if (selectedDot != null) {
