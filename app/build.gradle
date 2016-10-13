@@ -48,6 +48,7 @@ dependencies {
     compile deps.supportAnnotations
     compile deps.supportAppCompat
     compile deps.supportCardView
+    compile deps.supportDesign
     compile deps.supportFragments
 
     androidTestCompile deps.espresso
