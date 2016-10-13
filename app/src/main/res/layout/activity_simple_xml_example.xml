@@ -27,7 +27,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.itsronald.materialviewpagerindicatorsample.MainActivity">
+    tools:context="com.itsronald.materialviewpagerindicatorsample.SimpleXmlExampleActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
