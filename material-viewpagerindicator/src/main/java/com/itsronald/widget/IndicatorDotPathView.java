@@ -283,22 +283,10 @@ public class IndicatorDotPathView extends ViewGroup {
 
     //endregion
 
-    @NonNull
-    public AnimatorSet connectPathAndRetreatAnimator(@PathDirection int pathDirection) {
-        final AnimatorSet animatorSet = new AnimatorSet();
-
-        final IndicatorDotView fromDot = pathDirection == PATH_DIRECTION_RIGHT ? startDot : endDot;
-        final IndicatorDotView toDot = pathDirection == PATH_DIRECTION_LEFT ? startDot : endDot;
-        animatorSet.playSequentially(connectPathSegmentsAnimator(),
-                retreatConnectedPathAnimator(fromDot, toDot));
-
-        return animatorSet;
-    }
-
     //region Dot connection animation
 
     @NonNull
-    private Animator connectPathSegmentsAnimator() {
+    Animator connectPathAnimator() {
         final Rect startSegmentBounds = viewRectInNeighborCoords(startPathSegment, endPathSegment);
         final Rect endSegmentBounds = viewRectInNeighborCoords(endPathSegment, startPathSegment);
 
@@ -383,6 +371,13 @@ public class IndicatorDotPathView extends ViewGroup {
     //endregion
 
     //region Retreat animation
+
+    @NonNull
+    Animator retreatConnectedPathAnimator(@PathDirection int pathDirection) {
+        final IndicatorDotView fromDot = pathDirection == PATH_DIRECTION_RIGHT ? startDot : endDot;
+        final IndicatorDotView toDot = pathDirection == PATH_DIRECTION_LEFT ? startDot : endDot;
+        return retreatConnectedPathAnimator(fromDot, toDot);
+    }
 
     @NonNull
     private Animator retreatConnectedPathAnimator(@NonNull IndicatorDotView fromDot,

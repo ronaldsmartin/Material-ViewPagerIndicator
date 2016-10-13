@@ -79,6 +79,8 @@ public class ViewPagerIndicator extends ViewGroup {
     private int lastKnownCurrentPage = -1;
     private float lastKnownPositionOffset = -1;
     private boolean isUpdatingPositions = false;
+    private boolean isUpdatingIndicator = false;
+    private boolean selectedDotNeedsLayout = true;
 
     //endregion
 
@@ -201,6 +203,13 @@ public class ViewPagerIndicator extends ViewGroup {
     }
 
     @Override
+    public void requestLayout() {
+        if (!isUpdatingIndicator) {
+            super.requestLayout();
+        }
+    }
+
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         refresh();
     }
@@ -273,12 +282,13 @@ public class ViewPagerIndicator extends ViewGroup {
             lastKnownCurrentPage = -1;
             lastKnownPositionOffset = -1;
             updateIndicators(viewPager.getCurrentItem(), newAdapter);
-            invalidate();
             requestLayout();
         }
     }
 
     private void updateIndicators(int currentPage, @Nullable PagerAdapter pagerAdapter) {
+        isUpdatingIndicator = true;
+
         final int pageCount = pagerAdapter == null ? 0 : pagerAdapter.getCount();
         updateDotCount(pageCount);
 
@@ -287,6 +297,8 @@ public class ViewPagerIndicator extends ViewGroup {
         if (!isUpdatingPositions) {
             updateIndicatorPositions(currentPage, lastKnownPositionOffset, false);
         }
+
+        isUpdatingIndicator = false;
     }
 
     private void updateDotCount(int newDotCount) {
@@ -380,8 +392,9 @@ public class ViewPagerIndicator extends ViewGroup {
                 dotPath.layout(left, top, left + dotPath.getMeasuredWidth(), bottom);
             }
 
-            if (i == currentPage) {
+            if (i == currentPage && selectedDotNeedsLayout) {
                 selectedDot.layout(left, top, right, bottom);
+                selectedDotNeedsLayout = false;
             }
 
             left = right + dotPadding;
@@ -454,9 +467,8 @@ public class ViewPagerIndicator extends ViewGroup {
             return null;
         }
 
-        final int pathDirection = getPathDirectionForPageChange(lastPageIndex, newPageIndex);
-        final Animator pathAnimator = dotPath.connectPathAndRetreatAnimator(pathDirection);
-        pathAnimator.addListener(new AnimatorListenerAdapter() {
+        final Animator connectPathAnimator = dotPath.connectPathAnimator();
+        connectPathAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 dotPath.setVisibility(VISIBLE);
@@ -464,9 +476,12 @@ public class ViewPagerIndicator extends ViewGroup {
             }
         });
 
-        final long dotSlideDuration = pathAnimator.getDuration() / 2;
+        final long dotSlideDuration = IndicatorDotPathView.PATH_STRETCH_ANIM_DURATION / 2;
         final Animator selectedDotSlideAnimator =
-                selectedDotSlideAnimator(newPageIndex, dotSlideDuration, dotSlideDuration);
+                selectedDotSlideAnimator(newPageIndex, dotSlideDuration, 0);
+
+        final int pathDirection = getPathDirectionForPageChange(lastPageIndex, newPageIndex);
+        final Animator retreatPathAnimator = dotPath.retreatConnectedPathAnimator(pathDirection);
 
         final Animator dotRevealAnimator = lastDot.revealAnimator();
         dotRevealAnimator.addListener(new AnimatorListenerAdapter() {
@@ -477,7 +492,12 @@ public class ViewPagerIndicator extends ViewGroup {
         });
 
         final AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playSequentially(pathAnimator, dotRevealAnimator);
+        animatorSet.playSequentially(
+                connectPathAnimator,
+                selectedDotSlideAnimator,
+                retreatPathAnimator,
+                dotRevealAnimator
+        );
 
         return animatorSet;
     }
