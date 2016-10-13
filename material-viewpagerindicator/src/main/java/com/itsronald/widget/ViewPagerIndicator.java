@@ -491,12 +491,9 @@ public class ViewPagerIndicator extends ViewGroup {
         });
 
         final AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playSequentially(
-                connectPathAnimator,
-                selectedDotSlideAnimator,
-                retreatPathAnimator,
-                dotRevealAnimator
-        );
+        animatorSet.play(connectPathAnimator).before(selectedDotSlideAnimator);
+        animatorSet.play(retreatPathAnimator).after(selectedDotSlideAnimator);
+        animatorSet.play(dotRevealAnimator).with(retreatPathAnimator);
 
         return animatorSet;
     }
