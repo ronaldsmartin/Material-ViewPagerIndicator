@@ -139,4 +139,14 @@
 
     </android.support.v4.widget.NestedScrollView>
 
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onFABClick"
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_code_black_24dp"
+        app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="bottom|end|right"
+        app:useCompatPadding="true"/>
+
 </android.support.design.widget.CoordinatorLayout>

@@ -18,6 +18,7 @@
 
 <resources>
     <string name="app_name">Material ViewPagerIndicator</string>
+    <string name="repo_url">https://github.com/ronaldsmartin/Material-ViewPagerIndicator</string>
 
     <string name="title_activity_main">Indicator Demo</string>
 

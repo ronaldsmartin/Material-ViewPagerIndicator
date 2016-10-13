@@ -19,6 +19,7 @@
 package com.itsronald.materialviewpagerindicatorsample;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSimpleJavaExampleCardClick(View view) {
         final Intent intent = new Intent(this, SimpleJavaExampleActivity.class);
+        startActivity(intent);
+    }
+
+    public void onFABClick(View view) {
+        final String codeRepoUrl = getString(R.string.repo_url);
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(codeRepoUrl));
         startActivity(intent);
     }
 
