@@ -457,7 +457,6 @@ public class ViewPagerIndicator extends ViewGroup {
 
     @Nullable
     private Animator pageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
-        Log.d(TAG, "Building animator. lastPageIndex = " + lastPageIndex + " newPageIndex = " + newPageIndex);
         final IndicatorDotPathView dotPath = getDotPathForPageChange(lastPageIndex, newPageIndex);
         final IndicatorDotView lastDot = getDotForPage(lastPageIndex);
 
@@ -476,7 +475,7 @@ public class ViewPagerIndicator extends ViewGroup {
             }
         });
 
-        final long dotSlideDuration = IndicatorDotPathView.PATH_STRETCH_ANIM_DURATION / 2;
+        final long dotSlideDuration = IndicatorDotPathView.PATH_STRETCH_ANIM_DURATION;
         final Animator selectedDotSlideAnimator =
                 selectedDotSlideAnimator(newPageIndex, dotSlideDuration, 0);
 
