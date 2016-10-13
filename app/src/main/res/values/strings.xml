@@ -19,6 +19,14 @@
 <resources>
     <string name="app_name">Material ViewPagerIndicator</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="simple_xml_example_card_title">Simple XML Example</string>
+    <string name="simple_xml_example_card_subtitle">Minimal configuration</string>
+    <string name="simple_xml_example_card_text">
+        "To use ViewPagerIndicator, all you need to do is drop it into your ViewPager.\n\n"
+
+        "Add the indicator as a direct child of the ViewPager in your XML layout and set "
+        "layout_gravity to position the indicator."
+    </string>
 </resources>

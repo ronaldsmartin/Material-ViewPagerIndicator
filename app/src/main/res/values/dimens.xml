@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2016 Ronald Martin <hello@itsronald.com>
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,4 +20,12 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Margins for card content from the Material Design guidelines. -->
+    <!-- https://material.google.com/components/cards.html#cards-content-blocks -->
+    <dimen name="card_text_horizontal_padding">16dp</dimen>
+    <dimen name="card_text_title_top_padding">24dp</dimen>
+    <dimen name="card_text_subtitle_top_padding">12dp</dimen>
+    <dimen name="card_text_subtext_top_padding">16dp</dimen>
+    <dimen name="card_text_subtext_bottom_padding">24dp</dimen>
 </resources>
