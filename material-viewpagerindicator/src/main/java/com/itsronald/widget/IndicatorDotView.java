@@ -58,7 +58,7 @@ class IndicatorDotView extends ImageView {
     @ColorInt
     static final int DEFAULT_SELECTED_DOT_COLOR = Color.WHITE;
 
-    static final long REVEAL_ANIM_DURATION = 100;   // 100 ms
+    private static final long REVEAL_ANIM_DURATION = 100;   // 100 ms
 
     //endregion
 
@@ -114,6 +114,11 @@ class IndicatorDotView extends ImageView {
 
     //region Accessors
 
+    /**
+     * Get this dot's current radius.
+     *
+     * @return The dot's current radius, in pixels.
+     */
     @Px
     int getRadius() {
         return dotRadius;
