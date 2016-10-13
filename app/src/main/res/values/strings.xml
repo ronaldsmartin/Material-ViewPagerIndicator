@@ -19,7 +19,7 @@
 <resources>
     <string name="app_name">Material ViewPagerIndicator</string>
 
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Indicator Demo</string>
 
     <string name="simple_xml_example_card_title">Simple XML Example</string>
     <string name="simple_xml_example_card_subtitle">Minimal configuration</string>
