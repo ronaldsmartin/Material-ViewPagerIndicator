@@ -1,9 +1,13 @@
 package com.itsronald.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Dimension;
@@ -51,10 +55,12 @@ public class ViewPagerIndicator extends ViewGroup {
 
     //region Indicator Dots
     @Dimension
-    private static final int DEFAULT_DOT_PADDING_DIP = 6;
+    static final int DEFAULT_DOT_PADDING_DIP = 9;
 
     @NonNull
-    private List<IndicatorDotView> indicatorDots = new ArrayList<>();
+    private final List<IndicatorDotView> indicatorDots = new ArrayList<>();
+    @NonNull
+    private final List<IndicatorDotPathView> dotPaths = new ArrayList<>();
     private IndicatorDotView selectedDot;   // @NonNull, but initialized in init().
     @Px
     private int dotPadding;
@@ -73,6 +79,8 @@ public class ViewPagerIndicator extends ViewGroup {
     private int lastKnownCurrentPage = -1;
     private float lastKnownPositionOffset = -1;
     private boolean isUpdatingPositions = false;
+    private boolean isUpdatingIndicator = false;
+    private boolean selectedDotNeedsLayout = true;
 
     //endregion
 
@@ -155,6 +163,9 @@ public class ViewPagerIndicator extends ViewGroup {
         for (IndicatorDotView indicatorDot : indicatorDots) {
             indicatorDot.measure(childWidthSpec, childHeightSpec);
         }
+        for (IndicatorDotPathView dotPath : dotPaths) {
+            dotPath.measure(childWidthSpec, childHeightSpec);
+        }
 
         // Calculate measurement for this view.
         final int width;
@@ -189,6 +200,13 @@ public class ViewPagerIndicator extends ViewGroup {
         final int measuredHeight = ViewCompat.resolveSizeAndState(height, heightMeasureSpec,
                 childState);
         setMeasuredDimension(width, measuredHeight);
+    }
+
+    @Override
+    public void requestLayout() {
+        if (!isUpdatingIndicator) {
+            super.requestLayout();
+        }
     }
 
     @Override
@@ -264,25 +282,23 @@ public class ViewPagerIndicator extends ViewGroup {
             lastKnownCurrentPage = -1;
             lastKnownPositionOffset = -1;
             updateIndicators(viewPager.getCurrentItem(), newAdapter);
-            invalidate();
             requestLayout();
         }
     }
 
     private void updateIndicators(int currentPage, @Nullable PagerAdapter pagerAdapter) {
-        // TODO: Implement
-        Log.w(TAG, "Unimplemented");
+        isUpdatingIndicator = true;
 
         final int pageCount = pagerAdapter == null ? 0 : pagerAdapter.getCount();
         updateDotCount(pageCount);
-        Log.d(TAG, "Num pages: " + pageCount);
 
         lastKnownCurrentPage = currentPage;
-        Log.d(TAG, "Current page: " + lastKnownCurrentPage);
 
         if (!isUpdatingPositions) {
             updateIndicatorPositions(currentPage, lastKnownPositionOffset, false);
         }
+
+        isUpdatingIndicator = false;
     }
 
     private void updateDotCount(int newDotCount) {
@@ -309,12 +325,37 @@ public class ViewPagerIndicator extends ViewGroup {
             indicatorDots.removeAll(removedDots);
         }
 
+        // Make sure there is one fewer path than there are dots.
+        updatePathCount(newDotCount - 1);
+
         // Add selected dot to layout.
         if (newDotCount > 0) {
             addViewInLayout(selectedDot, -1, layoutParams, true);
         } else {
             removeViewInLayout(selectedDot);
-            Log.d(TAG, "Removing selectedDot");
+        }
+    }
+
+    private void updatePathCount(final int newPathCount) {
+        int pathCount = dotPaths.size();
+        if (pathCount < newPathCount) {
+            final LayoutParams layoutParams =
+                    new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            while (pathCount++ != newPathCount) {
+                final IndicatorDotPathView newPath = new IndicatorDotPathView(
+                        getContext(), getUnselectedDotColor(), getDotPadding(), getDotRadius()
+                );
+                newPath.setVisibility(INVISIBLE);
+                dotPaths.add(newPath);
+                addViewInLayout(newPath, -1, layoutParams, true);
+            }
+        } else if (pathCount > newPathCount && newPathCount >= 0) {
+            final List<IndicatorDotPathView> pathsToRemove = dotPaths
+                    .subList(newPathCount, pathCount);
+            for (IndicatorDotPathView dotPath : pathsToRemove) {
+                removeViewInLayout(dotPath);
+            }
+            dotPaths.removeAll(pathsToRemove);
         }
     }
 
@@ -327,9 +368,6 @@ public class ViewPagerIndicator extends ViewGroup {
      * @param forceUpdate    Whether or not to force an update
      */
     private void updateIndicatorPositions(int currentPage, float positionOffset, boolean forceUpdate) {
-        // TODO: Implement
-        Log.w(TAG, "Unimplemented");
-
         if (currentPage != lastKnownCurrentPage && viewPager != null) {
             updateIndicators(currentPage, viewPager.getAdapter());
         } else if (!forceUpdate && positionOffset == lastKnownPositionOffset) {
@@ -343,12 +381,20 @@ public class ViewPagerIndicator extends ViewGroup {
         final int bottom = top + dotWidth;
         int left = calculateIndicatorDotStart();
         int right = left + dotWidth;
-        for (int i = 0, dotCount = indicatorDots.size(); i < dotCount; ++i) {
+        for (int i = 0,
+             dotCount = indicatorDots.size(),
+             pathCount = dotPaths.size(); i < dotCount; ++i) {
             final IndicatorDotView dotView = indicatorDots.get(i);
             dotView.layout(left, top, right, bottom);
 
-            if (i == currentPage) {
+            if (i < pathCount)  {
+                final IndicatorDotPathView dotPath = dotPaths.get(i);
+                dotPath.layout(left, top, left + dotPath.getMeasuredWidth(), bottom);
+            }
+
+            if (i == currentPage && selectedDotNeedsLayout) {
                 selectedDot.layout(left, top, right, bottom);
+                selectedDotNeedsLayout = false;
             }
 
             left = right + dotPadding;
@@ -409,6 +455,72 @@ public class ViewPagerIndicator extends ViewGroup {
         return startPosition;
     }
 
+    @Nullable
+    private Animator pageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
+        final IndicatorDotPathView dotPath = getDotPathForPageChange(lastPageIndex, newPageIndex);
+        final IndicatorDotView lastDot = getDotForPage(lastPageIndex);
+
+        if (dotPath == null || lastDot == null) {
+            final String warning = dotPath == null ? "dotPath is null!" : "lastDot is null!";
+            Log.w(TAG, warning);
+            return null;
+        }
+
+        final Animator connectPathAnimator = dotPath.connectPathAnimator();
+        connectPathAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                dotPath.setVisibility(VISIBLE);
+                lastDot.setVisibility(INVISIBLE);
+            }
+        });
+
+        final long dotSlideDuration = IndicatorDotPathView.PATH_STRETCH_ANIM_DURATION;
+        final Animator selectedDotSlideAnimator =
+                selectedDotSlideAnimator(newPageIndex, dotSlideDuration, 0);
+
+        final int pathDirection = getPathDirectionForPageChange(lastPageIndex, newPageIndex);
+        final Animator retreatPathAnimator = dotPath.retreatConnectedPathAnimator(pathDirection);
+
+        final Animator dotRevealAnimator = lastDot.revealAnimator();
+        dotRevealAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                dotPath.setVisibility(INVISIBLE);
+            }
+        });
+
+        final AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playSequentially(
+                connectPathAnimator,
+                selectedDotSlideAnimator,
+                retreatPathAnimator,
+                dotRevealAnimator
+        );
+
+        return animatorSet;
+    }
+
+    @NonNull
+    private Animator selectedDotSlideAnimator(int newPageIndex,
+                                              long animationDuration,
+                                              long startDelay) {
+        final Rect newPageDotRect = new Rect();
+        final IndicatorDotView newPageDot = getDotForPage(newPageIndex);
+        if (newPageDot != null) {
+            newPageDot.getDrawingRect(newPageDotRect);
+            offsetDescendantRectToMyCoords(newPageDot, newPageDotRect);
+            offsetRectIntoDescendantCoords(selectedDot, newPageDotRect);
+        }
+        final float toX = newPageDotRect.left;
+        final float toY = newPageDotRect.top;
+
+        final Animator animator = selectedDot.slideAnimator(toX, toY, animationDuration);
+        animator.setStartDelay(startDelay);
+
+        return animator;
+    }
+
     private class PageListener extends DataSetObserver
             implements ViewPager.OnPageChangeListener, ViewPager.OnAdapterChangeListener {
 
@@ -433,10 +545,14 @@ public class ViewPagerIndicator extends ViewGroup {
 
         @Override
         public void onPageSelected(int position) {
+            final Animator pageChangeAnimator = pageChangeAnimator(lastKnownCurrentPage, position);
             if (scrollState == ViewPager.SCROLL_STATE_IDLE
                     && viewPager != null) {
                 // Only update the text here if we're not dragging or settling.
                 refresh();
+            }
+            if (pageChangeAnimator != null) {
+                pageChangeAnimator.start();
             }
         }
 
@@ -461,6 +577,28 @@ public class ViewPagerIndicator extends ViewGroup {
 
 
     //region Accessors
+
+    @Nullable
+    private IndicatorDotView getDotForPage(int pageIndex) {
+        if (pageIndex > indicatorDots.size() - 1 || pageIndex < 0) return null;
+        return indicatorDots.get(pageIndex);
+    }
+
+    @Nullable
+    private IndicatorDotPathView getDotPathForPageChange(int oldPageIndex, int newPageIndex) {
+        if (oldPageIndex < 0 || newPageIndex < 0
+                || oldPageIndex == newPageIndex)
+            return null;
+
+        final int dotPathIndex = oldPageIndex < newPageIndex ? oldPageIndex : newPageIndex;
+        return dotPathIndex >= dotPaths.size() ? null : dotPaths.get(dotPathIndex);
+    }
+
+    @IndicatorDotPathView.PathDirection
+    private int getPathDirectionForPageChange(int oldPageIndex, int newPageIndex) {
+        return oldPageIndex < newPageIndex ? IndicatorDotPathView.PATH_DIRECTION_RIGHT :
+                IndicatorDotPathView.PATH_DIRECTION_LEFT;
+    }
 
     /**
      * Get the {@link Gravity} used to position dots within the indicator.

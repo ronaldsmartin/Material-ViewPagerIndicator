@@ -1,6 +1,10 @@
 package com.itsronald.widget;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -14,9 +18,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 
 /**
@@ -25,15 +28,19 @@ import android.widget.ImageView;
 class IndicatorDotView extends ImageView {
 
     //region Constants
+    @NonNull
+    private static final String TAG = "IndicatorDotView";
 
     @Dimension
-    static final int DEFAULT_DOT_RADIUS_DIP = 4;
+    static final int DEFAULT_DOT_RADIUS_DIP = 3;
     @ColorInt
-    static final int DEFAULT_DOT_COLOR = Color.parseColor("#75FFFFFF");
+    static final int DEFAULT_DOT_COLOR = Color.LTGRAY;
     @ColorInt
     static final int DEFAULT_UNSELECTED_DOT_COLOR = DEFAULT_DOT_COLOR;
     @ColorInt
     static final int DEFAULT_SELECTED_DOT_COLOR = Color.WHITE;
+
+    static final long REVEAL_ANIM_DURATION = 100;   // 100 ms
 
     //endregion
 
@@ -89,15 +96,34 @@ class IndicatorDotView extends ImageView {
 
     //region Accessors
 
+    @Px
+    int getRadius() {
+        return dotRadius;
+    }
+
     /**
      * Set the preferred dot radius for this view.
      *
      * @param newRadius The new radius, in pixels.
      */
     void setRadius(@Px int newRadius) {
+        dotRadius = newRadius;
+
         final int diameter = newRadius * 2;
         dot.setIntrinsicWidth(diameter);
         dot.setIntrinsicHeight(diameter);
+
+        invalidate();
+    }
+
+    /**
+     * Get the current dot color for this view.
+     *
+     * @return The current color value for the dot.
+     */
+    @ColorInt
+    int getColor() {
+        return dot.getPaint().getColor();
     }
 
     /**
@@ -111,62 +137,106 @@ class IndicatorDotView extends ImageView {
 
     //endregion
 
+    //region Reveal animation
+
     /**
-     * Start a Material reveal animation of this view.
+     * Animation: Reveal this view, starting from the center.
+     *
+     * @return An animator that reveals this view from its center.
      */
-    void reveal() {
+    @NonNull
+    Animator revealAnimator() {
         final int centerX = getWidth() / 2;
         final int centerY = getHeight() / 2;
-        final long animationDuration = getContext().getResources()
-                .getInteger(android.R.integer.config_shortAnimTime);
 
+        final Animator animator = revealAnimator(centerX, centerY);
+        animator.setDuration(REVEAL_ANIM_DURATION);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                setVisibility(VISIBLE);
+            }
+        });
+        return animator;
+    }
+
+    /**
+     * Create the API-level appropriate animator for this indicator's reveal.
+     *
+     * @param centerX The X point from which the animation starts.
+     * @param centerY The Y point from which the animation starts.
+     *
+     * @see #revealAnimator()
+     */
+    @NonNull
+    private Animator revealAnimator(int centerX, int centerY) {
+        final Animator animator;
+        /*
+         * The standard material circular reveal animation is exactly what we want.
+         *
+         * Since this view is already circular, a scale animation effectively simulates the
+         * material circular reveal on earlier API versions.
+         */
+        final int oldScale = 0, newScale = 1;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            startCircularReveal(centerX, centerY, animationDuration);
+            animator = ViewAnimationUtils
+                    .createCircularReveal(this, centerX, centerY, 0, dotRadius);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            final PropertyValuesHolder scaleX = PropertyValuesHolder
+                    .ofFloat(View.SCALE_X, oldScale, newScale);
+            final PropertyValuesHolder scaleY = PropertyValuesHolder
+                    .ofFloat(View.SCALE_Y, oldScale, newScale);
+            animator = ObjectAnimator.ofPropertyValuesHolder(this, scaleX, scaleY);
         } else {
-            startScaleReveal(centerX, centerY, animationDuration);
+            final Animator scaleX = ObjectAnimator.ofFloat(this, "scaleX", oldScale, newScale);
+            final Animator scaleY = ObjectAnimator.ofFloat(this, "scaleY", oldScale, newScale);
+
+            final AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(scaleX, scaleY);
+            animator = animatorSet;
         }
+        return animator;
     }
+
+    //endregion
+
+    //region Slide animation
 
     /**
-     * Start a Material reveal animation of this view.
+     * Animation: Slide this view to another location on the screen.
      *
-     * @param centerX           The X point from which the animation starts.
-     * @param centerY           The Y point from which the animation starts.
-     * @param animationDuration How long the animation should last.
-     * @see #reveal()
+     * @param toX The horizontal coordinate to which this view should move, in this view's
+     *            coordinate space.
+     * @param toY The vertical coordinate to which this view should move, in this view's
+     *            coordinate space.
+     * @return An animator that will move this view to (toX, toY) when started.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void startCircularReveal(int centerX, int centerY, long animationDuration) {
-        Animator revealAnimator = ViewAnimationUtils
-                .createCircularReveal(this, centerX, centerY, 0, dotRadius);
-        revealAnimator.setDuration(animationDuration);
+    @NonNull
+    Animator slideAnimator(final float toX, final float toY, final long animationDuration) {
+        final float fromX = getTranslationX();
+        final float fromY = getTranslationY();
 
-        setVisibility(VISIBLE);
-        revealAnimator.start();
+        final Animator animator;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            final PropertyValuesHolder translationX = PropertyValuesHolder
+                    .ofFloat(View.TRANSLATION_X, fromX, toX);
+            final PropertyValuesHolder translationY = PropertyValuesHolder
+                    .ofFloat(View.TRANSLATION_Y, fromY, toY);
+            animator = ObjectAnimator.ofPropertyValuesHolder(this, translationX, translationY);
+        } else {
+            final Animator translationXAnimator = ObjectAnimator
+                    .ofFloat(this, "translationX", fromX, toX);
+            final Animator translationYAnimator = ObjectAnimator
+                    .ofFloat(this, "translationY", fromY, toY);
+
+            final AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(translationXAnimator, translationYAnimator);
+            animator = animatorSet;
+        }
+        animator.setDuration(animationDuration);
+
+        return animator;
     }
 
-    /**
-     * Start a fallback reveal animation of this view for API versions < Lollipop.
-     * <p>
-     * It looks the same as the Material Circular Reveal animation (because this is already
-     * a circle) but is fractionally slower to start.
-     *
-     * @param centerX           The X point from which the animation starts.
-     * @param centerY           The Y point from which the animation starts.
-     * @param animationDuration How long the animation should last.
-     * @see #reveal()
-     */
-    private void startScaleReveal(int centerX, int centerY, long animationDuration) {
-        ScaleAnimation scaleAnimation = new ScaleAnimation(0f, 1f, 0f, 1f, centerX, centerY);
-
-        scaleAnimation.setFillBefore(true);
-        scaleAnimation.setFillAfter(true);
-        scaleAnimation.setFillEnabled(true);
-
-        scaleAnimation.setDuration(animationDuration);
-        scaleAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
-
-        setVisibility(VISIBLE);
-        startAnimation(scaleAnimation);
-    }
+    //endregion
 }
