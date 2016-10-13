@@ -31,10 +31,8 @@ import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.v4.view.ViewCompat;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -58,12 +56,12 @@ import static com.itsronald.widget.ViewPagerIndicator.DEFAULT_DOT_PADDING_DIP;
  * Before starting this view's animation, its two dots should invisibly replace two adjacent dots
  * on the indicator itself.
  */
-public class IndicatorDotPathView extends ViewGroup {
+class IndicatorDotPathView extends ViewGroup {
 
     //region Constants
 
-    static final long PATH_STRETCH_ANIM_DURATION = 150; // 150 ms.
-    static final long PATH_RETREAT_ANIM_DURATION = 100; // 100 ms.
+    private static final long PATH_STRETCH_ANIM_DURATION = 150; // 150 ms.
+    private static final long PATH_RETREAT_ANIM_DURATION = 100; // 100 ms.
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PATH_DIRECTION_LEFT, PATH_DIRECTION_RIGHT})
@@ -119,7 +117,7 @@ public class IndicatorDotPathView extends ViewGroup {
         this.centerSegment = new ImageView(context);
         this.centerSegment.setImageDrawable(centerPathShape);
 
-        init(context, DEFAULT_DOT_COLOR);
+        init(DEFAULT_DOT_COLOR);
     }
 
     public IndicatorDotPathView(@NonNull Context context,
@@ -136,46 +134,9 @@ public class IndicatorDotPathView extends ViewGroup {
         setDotRadius(dotRadius);
     }
 
-    public IndicatorDotPathView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-
-        final float scale = context.getResources().getDisplayMetrics().density;
-        this.dotPadding = (int) (DEFAULT_DOT_PADDING_DIP * scale + 0.5);
-        this.dotRadius = (int) (DEFAULT_DOT_RADIUS_DIP * scale + 0.5);
-
-        this.startDot = new IndicatorDotView(context);
-        this.endDot = new IndicatorDotView(context);
-        this.startPathSegment = new DotPathSegment(context);
-        this.endPathSegment = new DotPathSegment(context);
-
-        this.centerSegment = new ImageView(context);
-        this.centerSegment.setImageDrawable(centerPathShape);
-
-        init(context, DEFAULT_DOT_COLOR);
-    }
-
-    public IndicatorDotPathView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-
-        final float scale = context.getResources().getDisplayMetrics().density;
-        this.dotPadding = (int) (DEFAULT_DOT_PADDING_DIP * scale + 0.5);
-        this.dotRadius = (int) (DEFAULT_DOT_RADIUS_DIP * scale + 0.5);
-
-        this.startDot = new IndicatorDotView(context);
-        this.endDot = new IndicatorDotView(context);
-        this.startPathSegment = new DotPathSegment(context);
-        this.endPathSegment = new DotPathSegment(context);
-
-        this.centerSegment = new ImageView(context);
-        this.centerSegment.setImageDrawable(centerPathShape);
-
-        init(context, DEFAULT_DOT_COLOR);
-    }
-
     //endregion
 
-    private void init(@NonNull Context context,
-                      @ColorInt int dotColor) {
+    private void init(@ColorInt int dotColor) {
         final LayoutParams layoutParams =
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         addView(startDot, -1, layoutParams);
