@@ -67,6 +67,8 @@ viewPager.addView(viewPagerIndicator, layoutParams);
 
 ```
 
+For more advanced usage, see [the wiki](https://github.com/ronaldsmartin/Material-ViewPagerIndicator/wiki/Advanced-Usage).
+
 ## Download
 **Material-ViewPagerIndicator** is available [via JitPack.io](https://jitpack.io/#ronaldsmartin/Material-ViewPagerIndicator).
 
