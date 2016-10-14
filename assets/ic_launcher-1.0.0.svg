@@ -1,0 +1,30 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <defs>
+  <radialGradient r="1" cy="0.5" cx="0" spreadMethod="pad" id="svg_25">
+   <stop offset="0" stop-opacity="0.996094" stop-color="#000000"/>
+   <stop offset="1" stop-opacity="0.992188" stop-color="#546e7a"/>
+  </radialGradient>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="514" width="514" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <rect rx="50" id="svg_15" height="492.903102" width="492.903102" y="9.548447" x="9.548447" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#607d8b"/>
+  <g id="svg_21">
+   <rect rx="50" id="svg_17" height="246" width="492.903102" y="9.548447" x="9.548447" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#546e7a"/>
+   <rect id="svg_18" height="50" width="492.903102" y="205.003145" x="9.548447" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#546e7a"/>
+  </g>
+  <rect opacity="0.86" transform="rotate(45, 290.005, 289.589)" fill-opacity="0.1" id="svg_19" height="80" width="100" y="249.589161" x="240.004872" stroke-opacity="null" stroke-width="0" stroke="#000" fill="url(#svg_25)"/>
+  <ellipse ry="40" rx="40" id="svg_12" cy="255.999992" cx="256" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#cccccc"/>
+  <rect opacity="0.86" transform="rotate(45, 163.008, 292.591)" fill-opacity="0.1" id="svg_26" height="80" width="100" y="252.59129" x="113.007521" stroke-opacity="null" stroke-width="0" stroke="#000" fill="url(#svg_25)"/>
+  <ellipse ry="40" rx="40" id="svg_2" cy="255.999996" cx="128" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#ffffff"/>
+  <rect opacity="0.86" transform="rotate(45, 421.006, 294.591)" fill-opacity="0.1" id="svg_27" height="80" width="100" y="254.591351" x="371.006443" stroke-opacity="null" stroke-width="0" stroke="#000" fill="url(#svg_25)"/>
+  <ellipse ry="40" rx="40" id="svg_9" cy="255.999996" cx="384" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#cccccc"/>
+ </g>
+</svg>
