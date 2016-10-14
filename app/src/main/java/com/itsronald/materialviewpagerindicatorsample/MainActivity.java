@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Last modified 10/12/16 11:22 PM.
+ * Last modified 10/13/16 11:34 AM.
  */
 
 package com.itsronald.materialviewpagerindicatorsample;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,26 +32,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
-    private static class PagerAdapter extends FragmentPagerAdapter {
+    //region OnClick methods
 
-        private static final int NUM_PAGES = 5;
-
-        private PagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-        }
-
-        @Override
-        public int getCount() {
-            return NUM_PAGES;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return PageFragment.newInstance("Page Number " + position);
-        }
+    public void onSimpleXmlExampleCardClick(View view) {
+        final Intent intent = new Intent(this, SimpleXmlExampleActivity.class);
+        startActivity(intent);
     }
+
+    public void onSimpleJavaExampleCardClick(View view) {
+        final Intent intent = new Intent(this, SimpleJavaExampleActivity.class);
+        startActivity(intent);
+    }
+
+    public void onFABClick(View view) {
+        final String codeRepoUrl = getString(R.string.repo_url);
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(codeRepoUrl));
+        startActivity(intent);
+    }
+
+    //endregion
 }

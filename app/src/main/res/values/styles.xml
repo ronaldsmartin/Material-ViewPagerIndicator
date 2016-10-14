@@ -20,11 +20,39 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="CardText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignWithParentIfMissing">true</item>
+        <item name="android:paddingLeft">@dimen/card_text_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/card_text_horizontal_padding</item>
+    </style>
+
+    <style name="CardText.Title">
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:paddingTop">@dimen/card_text_title_top_padding</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Headline</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+    </style>
+
+    <style name="CardText.Subtitle">
+        <item name="android:paddingTop">@dimen/card_text_subtitle_top_padding</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Caption</item>
+        <item name="android:textColor">@android:color/tertiary_text_light</item>
+    </style>
+
+    <style name="CardText.Body">
+        <item name="android:paddingTop">@dimen/card_text_subtext_top_padding</item>
+        <item name="android:paddingBottom">@dimen/card_text_subtext_bottom_padding</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
+        <item name="android:textColor">@android:color/secondary_text_light</item>
     </style>
 
 </resources>

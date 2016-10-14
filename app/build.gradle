@@ -31,11 +31,20 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            shrinkResources false
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -47,6 +56,8 @@ dependencies {
 
     compile deps.supportAnnotations
     compile deps.supportAppCompat
+    compile deps.supportCardView
+    compile deps.supportDesign
     compile deps.supportFragments
 
     androidTestCompile deps.espresso
