@@ -9,6 +9,14 @@ A super easy-to-use page indicator for the [Android Support Library v4's](https:
 
 ![Example screen capture](https://raw.githubusercontent.com/ronaldsmartin/Material-ViewPagerIndicator/assets/screenshots/1.0.0/capture-v1.0.0.gif)
 
+### Demo
+
+A demo app with examples is available on Google Play. The source for the demo is the `app` module in this project.
+
+[<img alt='Get it on Google Play' 
+    src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'
+    width="300"/>](https://play.google.com/store/apps/details?id=com.itsronald.materialviewpagerindicatorsample&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
+
 ## Usage
 
 `ViewPagerIndicator` is a [`@ViewPager.DecorView`](https://developer.android.com/reference/android/support/v4/view/ViewPager.DecorView.html) (like [Support-Design](https://developer.android.com/topic/libraries/support-library/features.html#design)'s [`TabLayout`](https://developer.android.com/reference/android/support/design/widget/TabLayout.html) and Support-v4's [`PagerTabStrip`](https://developer.android.com/reference/android/support/v4/view/PagerTabStrip.html) and [`PagerTitleStrip`](https://developer.android.com/reference/android/support/v4/view/PagerTitleStrip.html)) widgets.
