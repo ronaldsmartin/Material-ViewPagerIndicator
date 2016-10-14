@@ -22,7 +22,8 @@
 
     <string name="title_activity_main">Indicator Demo</string>
     <string name="subtitle_activity_main">Click an example to view it in action.</string>
-    <string name="expand">Expand</string>
+    <string name="toggle_description">Toggle Description</string>
+    <string name="more_examples_coming_soon">More examples coming soon!</string>
 
     <!-- Simple XML Example -->
     <string name="simple_xml_example_card_title">Simple XML Example</string>

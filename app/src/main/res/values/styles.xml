@@ -63,13 +63,17 @@
             tools:targetApi="17">@dimen/card_action_layout_margin</item>
     </style>
 
-    <style name="CardAction.Expand">
+    <style name="CardActionExpand" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">@dimen/card_action_layout_margin</item>
         <item name="android:layout_marginEnd"
             tools:targetApi="17">@dimen/card_action_layout_margin</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_alignParentEnd"
             tools:targetApi="17">true</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">@dimen/card_action_layout_margin</item>
     </style>
 
 </resources>

@@ -31,6 +31,7 @@
         android:layout_centerInParent="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textSize="42sp"
+        android:textColor="@android:color/primary_text_dark"
         tools:text="Page Number X" />
 
 </RelativeLayout>
