@@ -2,6 +2,7 @@
 
 [![Release](https://jitpack.io/v/ronaldsmartin/Material-ViewPagerIndicator.svg)](https://jitpack.io/#ronaldsmartin/Material-ViewPagerIndicator)
 [![API 11+](https://img.shields.io/badge/API-11%2B-green.svg?style=flat)](https://android-arsenal.com/api?level=11)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Material%20ViewPagerIndicator-orange.svg?style=flat)](http://android-arsenal.com/details/1/4518)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/LICENSE.md)
 [![Build Status](https://travis-ci.org/ronaldsmartin/Material-ViewPagerIndicator.svg?branch=master)](https://travis-ci.org/ronaldsmartin/Material-ViewPagerIndicator)
 
