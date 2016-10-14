@@ -45,7 +45,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                app:subtitle="@string/subtitle_activity_main"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -66,20 +67,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:animateLayoutChanges="true">
 
             <!-- Simple XML Example-->
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
+                android:foreground="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:onClick="onSimpleXmlExampleCardClick"
+                android:animateLayoutChanges="true"
                 app:cardUseCompatPadding="true">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true">
 
                     <TextView
                         android:id="@+id/text_simple_xml_title"
@@ -92,10 +96,36 @@
                         android:text="@string/simple_xml_example_card_subtitle"
                         style="@style/CardText.Subtitle"/>
 
+                    <Button
+                        android:id="@+id/btn_simple_xml_action_view_activity"
+                        android:layout_below="@+id/text_simple_xml_subtitle"
+                        android:text="@string/simple_xml_action_view_activity"
+                        android:onClick="onSimpleXmlExampleActionViewActivity"
+                        style="@style/CardAction"/>
+
+                    <Button
+                        android:id="@+id/btn_simple_xml_action_view_layout"
+                        android:layout_alignTop="@+id/btn_simple_xml_action_view_activity"
+                        android:layout_toRightOf="@+id/btn_simple_xml_action_view_activity"
+                        android:layout_toEndOf="@+id/btn_simple_xml_action_view_activity"
+                        android:text="@string/simple_xml_action_view_layout"
+                        android:onClick="onSimpleXmlExampleActionViewLayout"
+                        style="@style/CardAction"/>
+
+                    <ImageButton
+                        android:layout_alignTop="@+id/btn_simple_xml_action_view_activity"
+                        android:layout_alignBottom="@+id/btn_simple_xml_action_view_activity"
+                        android:contentDescription="@string/toggle_description"
+                        android:onClick="onSimpleXmlExampleToggleActionClicked"
+                        app:srcCompat="@drawable/ic_expand_more_black_24dp"
+                        style="@style/CardActionExpand"/>
+
                     <TextView
                         android:id="@+id/text_simple_xml_description"
-                        android:layout_below="@+id/text_simple_xml_subtitle"
+                        android:layout_below="@+id/btn_simple_xml_action_view_activity"
                         android:text="@string/simple_xml_example_card_text"
+                        android:visibility="gone"
+                        tools:visibility="visible"
                         style="@style/CardText.Body"/>
 
                 </RelativeLayout>
@@ -106,14 +136,16 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:onClick="onSimpleJavaExampleCardClick"
+                android:animateLayoutChanges="true"
                 app:cardUseCompatPadding="true">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true">
 
                     <TextView
                         android:id="@+id/text_simple_java_title"
@@ -126,15 +158,50 @@
                         android:text="@string/simple_java_example_card_subtitle"
                         style="@style/CardText.Subtitle"/>
 
+                    <Button
+                        android:id="@+id/btn_simple_java_action_view_activity"
+                        android:layout_below="@+id/text_simple_java_subtitle"
+                        android:text="@string/simple_java_action_view_activity"
+                        android:onClick="onSimpleJavaExampleActionViewActivity"
+                        style="@style/CardAction"/>
+
+                    <Button
+                        android:id="@+id/btn_simple_java_action_view_layout"
+                        android:layout_alignTop="@+id/btn_simple_java_action_view_activity"
+                        android:layout_toRightOf="@+id/btn_simple_java_action_view_activity"
+                        android:layout_toEndOf="@+id/btn_simple_java_action_view_activity"
+                        android:text="@string/simple_java_action_view_layout"
+                        android:onClick="onSimpleJavaExampleActionViewLayout"
+                        style="@style/CardAction"/>
+
+                    <ImageButton
+                        android:layout_alignTop="@+id/btn_simple_java_action_view_activity"
+                        android:layout_alignBottom="@+id/btn_simple_java_action_view_activity"
+                        android:contentDescription="@string/toggle_description"
+                        android:onClick="onSimpleJavaExampleToggleActionClicked"
+                        app:srcCompat="@drawable/ic_expand_more_black_24dp"
+                        style="@style/CardActionExpand"/>
+
                     <TextView
                         android:id="@+id/text_simple_java_description"
-                        android:layout_below="@+id/text_simple_java_subtitle"
+                        android:layout_below="@+id/btn_simple_java_action_view_activity"
                         android:text="@string/simple_java_example_card_text"
+                        android:visibility="gone"
+                        tools:visibility="visible"
                         style="@style/CardText.Body"/>
 
                 </RelativeLayout>
 
             </android.support.v7.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="@dimen/card_text_title_top_padding"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@android:color/tertiary_text_light"
+                android:text="@string/more_examples_coming_soon"/>
 
         </LinearLayout>
 

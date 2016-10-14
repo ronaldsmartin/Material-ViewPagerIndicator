@@ -17,7 +17,7 @@
   ~ Last modified 10/12/16 11:22 PM.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -49,10 +49,31 @@
     </style>
 
     <style name="CardText.Body">
-        <item name="android:paddingTop">@dimen/card_text_subtext_top_padding</item>
         <item name="android:paddingBottom">@dimen/card_text_subtext_bottom_padding</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
         <item name="android:textColor">@android:color/secondary_text_light</item>
+    </style>
+
+    <style name="CardAction" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignWithParentIfMissing">true</item>
+        <item name="android:layout_marginLeft">@dimen/card_action_layout_margin</item>
+        <item name="android:layout_marginStart"
+            tools:targetApi="17">@dimen/card_action_layout_margin</item>
+    </style>
+
+    <style name="CardActionExpand" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/card_action_layout_margin</item>
+        <item name="android:layout_marginEnd"
+            tools:targetApi="17">@dimen/card_action_layout_margin</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentEnd"
+            tools:targetApi="17">true</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">@dimen/card_action_layout_margin</item>
     </style>
 
 </resources>

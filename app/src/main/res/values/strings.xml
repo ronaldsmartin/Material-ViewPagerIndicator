@@ -18,9 +18,32 @@
 
 <resources>
     <string name="app_name">Material ViewPagerIndicator</string>
-    <string name="repo_url">https://github.com/ronaldsmartin/Material-ViewPagerIndicator</string>
 
+    <!-- URLs -->
+    <string name="repo_url"
+        translatable="false">https://github.com/ronaldsmartin/Material-ViewPagerIndicator</string>
+
+    <string name="simple_xml_example_activity_url" translatable="false">
+        https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/app/src/main/java/com/itsronald/materialviewpagerindicatorsample/SimpleXmlExampleActivity.java
+    </string>
+    <string name="simple_xml_example_layout_url" translatable="true">
+        https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/app/src/main/res/layout/activity_simple_xml_example.xml
+    </string>
+
+    <string name="simple_java_example_activity_url" translatable="false">
+        https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/app/src/main/java/com/itsronald/materialviewpagerindicatorsample/SimpleJavaExampleActivity.java
+    </string>
+    <string name="simple_java_example_layout_url" translatable="false">
+        https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/app/src/main/res/layout/activity_simple_java_example.xml
+    </string>
+
+
+    <!-- activity_main-->
     <string name="title_activity_main">Indicator Demo</string>
+    <string name="subtitle_activity_main">Click an example to view it in action.</string>
+    <string name="toggle_description">Toggle Description</string>
+    <string name="more_examples_coming_soon">More examples coming soon!</string>
+
 
     <!-- Simple XML Example -->
     <string name="simple_xml_example_card_title">Simple XML Example</string>
@@ -31,6 +54,9 @@
         "Add the indicator as a direct child of the ViewPager in your XML layout and set "
         "layout_gravity to position the indicator."
     </string>
+    <string name="simple_xml_action_view_activity">Activity</string>
+    <string name="simple_xml_action_view_layout">Layout</string>
+
 
     <!-- Simple Java Example -->
     <string name="simple_java_example_card_title">Simple Java Example</string>
@@ -44,4 +70,7 @@
         "Please note that due to the implementation of the Support ViewPager widget, the "
         "indicator\'s width will be fixed to match_parent, even if you specify wrap_content."
     </string>
+    <string name="simple_java_action_view_activity">Activity</string>
+    <string name="simple_java_action_view_layout">Layout</string>
+
 </resources>
