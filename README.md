@@ -1,8 +1,9 @@
 # ![Icon](https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/app/src/main/res/mipmap-mdpi/ic_launcher.png) Material-ViewPagerIndicator
 
-[![Build Status](https://travis-ci.org/ronaldsmartin/Material-ViewPagerIndicator.svg?branch=master)](https://travis-ci.org/ronaldsmartin/Material-ViewPagerIndicator)
+[![Release](https://jitpack.io/v/ronaldsmartin/Material-ViewPagerIndicator.svg)](https://jitpack.io/#ronaldsmartin/Material-ViewPagerIndicator)
 [![API 11+](https://img.shields.io/badge/API-11%2B-green.svg?style=flat)](https://android-arsenal.com/api?level=11)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/ronaldsmartin/Material-ViewPagerIndicator/blob/master/LICENSE.md)
+[![Build Status](https://travis-ci.org/ronaldsmartin/Material-ViewPagerIndicator.svg?branch=master)](https://travis-ci.org/ronaldsmartin/Material-ViewPagerIndicator)
 
 A super easy-to-use page indicator for the [Android Support Library v4's](https://developer.android.com/topic/libraries/support-library/features.html#v4-core-ui) [`ViewPager`](https://developer.android.com/reference/android/support/v4/view/ViewPager.html) widget with [Material Design](https://material.google.com/motion/material-motion.html#) ink animations.
 
@@ -57,6 +58,37 @@ final ViewPagerIndicator viewPagerIndicator = new ViewPagerIndicator(context);
 viewPager.addView(viewPagerIndicator, layoutParams);
 
 ```
+
+## Download
+**Material-ViewPagerIndicator** is available [via JitPack.io](https://jitpack.io/#ronaldsmartin/Material-ViewPagerIndicator).
+
+### Gradle
+
+Add JitPack to your maven repositories:
+
+```groovy
+allprojects {
+	repositories {
+		...
+		maven { url "https://jitpack.io" }
+	}
+}
+```
+
+Add Material-ViewPagerIndicator to your app dependencies:
+
+```groovy
+
+dependencies {
+    // x.y.z is the latest release version number.
+    compile 'com.github.ronaldsmartin:Material-ViewPagerIndicator:x.y.z'
+}
+
+```
+
+### Other
+
+Please see the [JitPack page](https://jitpack.io/#ronaldsmartin/Material-ViewPagerIndicator) for instructions on using the library with other build systems. 
 
 ## License
 
