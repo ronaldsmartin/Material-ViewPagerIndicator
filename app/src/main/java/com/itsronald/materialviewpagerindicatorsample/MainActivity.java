@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.Toolbar;
@@ -53,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSimpleXmlExampleActionViewActivity(View view) {
-
+        startActivity(openUrlIntent(R.string.simple_xml_example_activity_url));
     }
 
     public void onSimpleXmlExampleActionViewLayout(View view) {
-
+        startActivity(openUrlIntent(R.string.simple_xml_example_layout_url));
     }
 
     public void onSimpleXmlExampleToggleActionClicked(View view) {
@@ -70,18 +72,6 @@ public class MainActivity extends AppCompatActivity {
         simpleXmlCardExpanded = !simpleXmlCardExpanded;
     }
 
-    private void toggleExpandButtonImage(ImageButton button, boolean isExpanded) {
-        final int newDrawableId = isExpanded ?
-                R.drawable.ic_expand_more_black_24dp : R.drawable.ic_expand_less_black_24dp;
-        final Drawable newDrawable = AppCompatResources.getDrawable(this, newDrawableId);
-        button.setImageDrawable(newDrawable);
-    }
-
-    private void toggleTextExpanded(TextView textView, boolean isExpanded) {
-        final int newVisibility = isExpanded ? TextView.GONE : TextView.VISIBLE;
-        textView.setVisibility(newVisibility);
-    }
-
     //endregion
 
     //region Simple Java Example
@@ -92,11 +82,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSimpleJavaExampleActionViewActivity(View view) {
-
+        startActivity(openUrlIntent(R.string.simple_java_example_activity_url));
     }
 
     public void onSimpleJavaExampleActionViewLayout(View view) {
-
+        startActivity(openUrlIntent(R.string.simple_java_example_layout_url));
     }
 
     public void onSimpleJavaExampleToggleActionClicked(View view) {
@@ -112,9 +102,30 @@ public class MainActivity extends AppCompatActivity {
     //endregion
 
     public void onFABClick(View view) {
-        final String codeRepoUrl = getString(R.string.repo_url);
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(codeRepoUrl));
-        startActivity(intent);
+        startActivity(openUrlIntent(R.string.repo_url));
+    }
+
+    //endregion
+
+    //region Utility methods
+
+    private void toggleExpandButtonImage(ImageButton button, boolean isExpanded) {
+        final int newDrawableId = isExpanded ?
+                R.drawable.ic_expand_more_black_24dp : R.drawable.ic_expand_less_black_24dp;
+        final Drawable newDrawable = AppCompatResources.getDrawable(this, newDrawableId);
+        button.setImageDrawable(newDrawable);
+    }
+
+    private void toggleTextExpanded(TextView textView, boolean isExpanded) {
+        final int newVisibility = isExpanded ? TextView.GONE : TextView.VISIBLE;
+        textView.setVisibility(newVisibility);
+    }
+
+    @NonNull
+    private Intent openUrlIntent(@StringRes int urlStringId) {
+        // TODO: Use the Chrome custom tabs framework or a similar solution to open this without leaving the app.
+        final String url = getString(urlStringId);
+        return new Intent(Intent.ACTION_VIEW, Uri.parse(url));
     }
 
     //endregion
