@@ -65,12 +65,12 @@ class IndicatorDotPathView extends ViewGroup {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PATH_DIRECTION_LEFT, PATH_DIRECTION_RIGHT})
-    public @interface PathDirection {}
+    @interface PathDirection {}
 
     @PathDirection
-    public static final int PATH_DIRECTION_LEFT = 0;
+    static final int PATH_DIRECTION_LEFT = 0;
     @PathDirection
-    public static final int PATH_DIRECTION_RIGHT = 1;
+    static final int PATH_DIRECTION_RIGHT = 1;
 
     //endregion
 
@@ -102,7 +102,7 @@ class IndicatorDotPathView extends ViewGroup {
 
     //region Constructors
 
-    public IndicatorDotPathView(@NonNull Context context) {
+    IndicatorDotPathView(@NonNull Context context) {
         super(context);
 
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -120,7 +120,7 @@ class IndicatorDotPathView extends ViewGroup {
         init(DEFAULT_DOT_COLOR);
     }
 
-    public IndicatorDotPathView(@NonNull Context context,
+    IndicatorDotPathView(@NonNull Context context,
                                 @ColorInt int dotColor,
                                 @Px int dotPadding,
                                 @Px int dotRadius) {
@@ -496,7 +496,7 @@ class IndicatorDotPathView extends ViewGroup {
          * @return An animator.
          */
         @NonNull
-        public Animator stretchAnimator(long animationDuration, final float toX, final float toY) {
+        Animator stretchAnimator(long animationDuration, final float toX, final float toY) {
             // Since the provided coordinates are in this view's coordinate space, the absolute distance
             // to the coordinate is the value of the coordinate itself.
             final float distanceX = Math.abs(toX) + (toX < 0 ? getWidth() : 0);
