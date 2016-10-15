@@ -337,8 +337,8 @@ public class ViewPagerIndicator extends ViewGroup {
                 addViewInLayout(newDot, -1, layoutParams, true);
             }
         } else if (dotCount > newDotCount) {
-            final List<IndicatorDotView> removedDots = indicatorDots
-                    .subList(newDotCount, dotCount);
+            final List<IndicatorDotView> removedDots =
+                    new ArrayList<>(indicatorDots.subList(newDotCount, dotCount));
             for (IndicatorDotView removedDot : removedDots) {
                 removeViewInLayout(removedDot);
             }
@@ -370,8 +370,8 @@ public class ViewPagerIndicator extends ViewGroup {
                 addViewInLayout(newPath, -1, layoutParams, true);
             }
         } else if (pathCount > newPathCount && newPathCount >= 0) {
-            final List<IndicatorDotPathView> pathsToRemove = dotPaths
-                    .subList(newPathCount, pathCount);
+            final List<IndicatorDotPathView> pathsToRemove =
+                    new ArrayList<>(dotPaths.subList(newPathCount, pathCount));
             for (IndicatorDotPathView dotPath : pathsToRemove) {
                 removeViewInLayout(dotPath);
             }
