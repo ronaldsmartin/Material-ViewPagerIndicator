@@ -160,7 +160,7 @@ public class ViewPagerIndicator extends ViewGroup {
 
         attributes.recycle();
 
-        selectedDot = new IndicatorDotView(context, null, defStyleAttr, defStyleRes);
+        selectedDot = new IndicatorDotView(context);
         selectedDot.setColor(selectedDotColor);
         selectedDot.setRadius(dotRadius);
     }
