@@ -556,11 +556,7 @@ public class ViewPagerIndicator extends ViewGroup {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            if (positionOffset > 0.5f) {
-//                // Consider ourselves to be on the next page when we're 50% of the way there.
-//                position++;
-//            }
-//            updateIndicatorPositions(position, positionOffset, false);
+            //do nothing
         }
 
         @Override
@@ -574,6 +570,7 @@ public class ViewPagerIndicator extends ViewGroup {
             if (pageChangeAnimator != null) {
                 pageChangeAnimator.start();
             }
+            //update lastKnownCurrentPage here
             lastKnownCurrentPage = position;
         }
 
