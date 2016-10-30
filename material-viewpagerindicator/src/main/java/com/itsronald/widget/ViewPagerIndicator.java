@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Last modified 10/12/16 11:22 PM.
+ * Last modified 10/29/16 10:41 PM.
  */
 
 package com.itsronald.widget;
@@ -29,6 +29,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Dimension;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
@@ -41,9 +42,12 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import java.lang.annotation.Retention;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * ViewPagerIndicator is a non-interactive indicator of the current, next,
@@ -57,10 +61,43 @@ import java.util.List;
 @ViewPager.DecorView
 public class ViewPagerIndicator extends ViewGroup {
 
+    //region Constants
+
     @NonNull
     private static final String TAG = "ViewPagerIndicator";
     
     private static final long DOT_SLIDE_ANIM_DURATION = 150;    // 150 ms.
+
+    /**
+     * Indicator animation styles.
+     * <p>
+     * You can use #getAnimationStyle() and #setAnimationStyle(int) in conjunction with these
+     * values to control the indicator's page change animations.
+     */
+    @IntDef({ANIMATION_STYLE_NONE, ANIMATION_STYLE_INK, ANIMATION_STYLE_SCALE})
+    @Retention(SOURCE)
+    public @interface AnimationStyle {
+    }
+
+    /**
+     * Indicator animation style: The selected dot changes colors with no animation.
+     */
+    public static final int ANIMATION_STYLE_NONE = 0;
+    /**
+     * Indicator animation style: The selected dot slides along a dynamic path that collapses
+     * behind it.
+     * <p>
+     * This is the default animation style.
+     */
+    public static final int ANIMATION_STYLE_INK = 1;
+    /**
+     * Indicator animation style: The selected dot is slightly larger than the unselected dots.
+     * When the page changes, the dot for the new page grows and changes color, while the dot for
+     * the old page shifts to match the other unselected page dots.
+     */
+    public static final int ANIMATION_STYLE_SCALE = 2;
+
+    //endregion
 
     //region ViewPager
 
