@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Last modified 10/29/16 10:41 PM.
+ * Last modified 10/29/16 11:02 PM.
  */
 
 package com.itsronald.widget;
@@ -76,8 +76,7 @@ public class ViewPagerIndicator extends ViewGroup {
      */
     @IntDef({ANIMATION_STYLE_NONE, ANIMATION_STYLE_INK, ANIMATION_STYLE_SCALE})
     @Retention(SOURCE)
-    public @interface AnimationStyle {
-    }
+    public @interface AnimationStyle {}
 
     /**
      * Indicator animation style: The selected dot changes colors with no animation.
@@ -127,6 +126,7 @@ public class ViewPagerIndicator extends ViewGroup {
     private int unselectedDotColor;
     @ColorInt
     private int selectedDotColor;
+    private int animationStyle;
 
     //endregion
 
@@ -193,6 +193,11 @@ public class ViewPagerIndicator extends ViewGroup {
         selectedDotColor = attributes.getColor(
                 R.styleable.ViewPagerIndicator_selectedDotColor,
                 IndicatorDotView.DEFAULT_SELECTED_DOT_COLOR
+        );
+
+        animationStyle = attributes.getInt(
+                R.styleable.ViewPagerIndicator_animationStyle,
+                ANIMATION_STYLE_INK
         );
 
         attributes.recycle();
@@ -769,6 +774,32 @@ public class ViewPagerIndicator extends ViewGroup {
             selectedDot.setColor(color);
             selectedDot.invalidate();
         }
+    }
+
+    /**
+     * Get the current animation style used for page changes.
+     *
+     * @return The {@link AnimationStyle} currently being used when the indicator changes pages.
+     *
+     * @see #setAnimationStyle(int)
+     */
+    @AnimationStyle
+    public int getAnimationStyle() {
+        return animationStyle;
+    }
+
+    /**
+     * Set a new page change animation style for the indicator.
+     *
+     * @param animationStyle The animation to use when the ViewPager page is changed.
+     *                       Supported values can be found in {@link AnimationStyle}.
+     *
+     * @see #getAnimationStyle()
+     */
+    public void setAnimationStyle(@AnimationStyle int animationStyle) {
+        this.animationStyle = animationStyle;
+        invalidate();
+        requestLayout();
     }
 
     //endregion
