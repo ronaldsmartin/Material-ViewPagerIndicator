@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Last modified 10/29/16 11:25 PM.
+ * Last modified 10/29/16 11:37 PM.
  */
 
 package com.itsronald.widget;
@@ -597,6 +597,16 @@ public class ViewPagerIndicator extends ViewGroup {
         return animator;
     }
 
+    private void layoutPageChangeImmediate(int newPageIndex) {
+        final Rect dotRect = new Rect();
+        final IndicatorDotView newPageDot = getDotForPage(newPageIndex);
+        if (newPageDot != null) {
+            newPageDot.getDrawingRect(dotRect);
+            offsetDescendantRectToMyCoords(newPageDot, dotRect);
+            selectedDot.layout(dotRect.left, dotRect.top, dotRect.right, dotRect.bottom);
+        }
+    }
+
     /**
      * Watches the ViewPager for changes, updating the indicator as needed.
      */
@@ -630,7 +640,9 @@ public class ViewPagerIndicator extends ViewGroup {
                 refresh();
             }
 
-            if (pageChangeAnimator != null) {
+            if (pageChangeAnimator == null) {
+                layoutPageChangeImmediate(position);
+            } else {
                 pageChangeAnimator.start();
             }
 
