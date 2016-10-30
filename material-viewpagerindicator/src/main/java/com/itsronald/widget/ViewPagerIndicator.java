@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Last modified 10/29/16 11:02 PM.
+ * Last modified 10/29/16 11:14 PM.
  */
 
 package com.itsronald.widget;
@@ -518,7 +518,20 @@ public class ViewPagerIndicator extends ViewGroup {
     }
 
     @Nullable
-    private Animator pageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
+    private Animator getPageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
+        switch (getAnimationStyle()) {
+            case ANIMATION_STYLE_INK:
+                return getInkPageChangeAnimator(lastPageIndex, newPageIndex);
+            case ANIMATION_STYLE_SCALE:
+                Log.w(TAG, "Unimplemented");
+            case ANIMATION_STYLE_NONE:
+            default:
+                return null;
+        }
+    }
+
+    @Nullable
+    private Animator getInkPageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
         final IndicatorDotPathView dotPath = getDotPathForPageChange(lastPageIndex, newPageIndex);
         final IndicatorDotView lastDot = getDotForPage(lastPageIndex);
 
@@ -598,21 +611,25 @@ public class ViewPagerIndicator extends ViewGroup {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            //do nothing
+            // No action necessary - animations will be triggered only when the page has changed
+            // completely.
         }
 
         @Override
         public void onPageSelected(int position) {
-            final Animator pageChangeAnimator = pageChangeAnimator(lastKnownCurrentPage, position);
+            final Animator pageChangeAnimator =
+                    getPageChangeAnimator(lastKnownCurrentPage, position);
+
             if (scrollState == ViewPager.SCROLL_STATE_IDLE
                     && viewPager != null) {
                 // Only update the text here if we're not dragging or settling.
                 refresh();
             }
+
             if (pageChangeAnimator != null) {
                 pageChangeAnimator.start();
             }
-            //update lastKnownCurrentPage here
+
             lastKnownCurrentPage = position;
         }
 
