@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Last modified 10/29/16 11:14 PM.
+ * Last modified 10/29/16 11:25 PM.
  */
 
 package com.itsronald.widget;
@@ -71,8 +71,9 @@ public class ViewPagerIndicator extends ViewGroup {
     /**
      * Indicator animation styles.
      * <p>
-     * You can use #getAnimationStyle() and #setAnimationStyle(int) in conjunction with these
-     * values to control the indicator's page change animations.
+     * You can use {@link #getAnimationStyle()} and {@link #setAnimationStyle(int)} in conjunction
+     * with these values or the {@code animationStyle} XML styleable attribute to control the
+     * indicator's page change animations.
      */
     @IntDef({ANIMATION_STYLE_NONE, ANIMATION_STYLE_INK, ANIMATION_STYLE_SCALE})
     @Retention(SOURCE)
@@ -81,6 +82,7 @@ public class ViewPagerIndicator extends ViewGroup {
     /**
      * Indicator animation style: The selected dot changes colors with no animation.
      */
+    @AnimationStyle
     public static final int ANIMATION_STYLE_NONE = 0;
     /**
      * Indicator animation style: The selected dot slides along a dynamic path that collapses
@@ -88,12 +90,14 @@ public class ViewPagerIndicator extends ViewGroup {
      * <p>
      * This is the default animation style.
      */
+    @AnimationStyle
     public static final int ANIMATION_STYLE_INK = 1;
     /**
      * Indicator animation style: The selected dot is slightly larger than the unselected dots.
      * When the page changes, the dot for the new page grows and changes color, while the dot for
      * the old page shifts to match the other unselected page dots.
      */
+    @AnimationStyle
     public static final int ANIMATION_STYLE_SCALE = 2;
 
     //endregion
@@ -234,9 +238,9 @@ public class ViewPagerIndicator extends ViewGroup {
         final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         if (widthMode == MeasureSpec.EXACTLY) {
             /*
-             * Due to the implementation of onMeasure() in ViewPager, this case will always be
-             * called if vertical layout_gravity is specified on this view. Since the Material
-             * Design spec usually positions dot indicators like this at the bottom of pages, this
+             * Due to the implementation of onMeasure() in ViewPager, this case will be called if
+             * vertical layout_gravity is specified on this view. Since the Material Design spec
+             * usually positions dot indicators like this at the bottom of pages, that means this
              * case will be called almost all the time.
              */
             width = MeasureSpec.getSize(widthMeasureSpec);
@@ -680,6 +684,8 @@ public class ViewPagerIndicator extends ViewGroup {
     /**
      * Get the {@link Gravity} used to position dots within the indicator.
      * Only the vertical gravity component is used.
+     *
+     * @see #setGravity(int)
      */
     public int getGravity() {
         return gravity;
@@ -690,6 +696,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Only the vertical gravity component is used.
      *
      * @param newGravity {@link Gravity} constant for positioning indicator dots.
+     *
+     * @see #getGravity()
      */
     public void setGravity(int newGravity) {
         gravity = newGravity;
@@ -700,6 +708,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Get the current spacing between each indicator dot.
      *
      * @return The distance between each indicator dot, in pixels.
+     *
+     * @see #setDotPadding(int)
      */
     @Px
     public int getDotPadding() {
@@ -710,6 +720,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Set the spacing between each indicator dot.
      *
      * @param newDotPadding The distance to use between each indicator dot, in pixels.
+     *
+     * @see #getDotPadding()
      */
     public void setDotPadding(@Px int newDotPadding) {
         if (dotPadding == newDotPadding) return;
@@ -724,6 +736,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Get the current radius of each indicator dot.
      *
      * @return The radius of each indicator dot, in pixels.
+     *
+     * @see #setDotRadius(int)
      */
     @Px
     public int getDotRadius() {
@@ -734,6 +748,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Set the radius of each indicator dot.
      *
      * @param newRadius The new radius to use for each indicator dot.
+     *
+     * @see #getDotRadius()
      */
     public void setDotRadius(@Px int newRadius) {
         if (dotRadius == newRadius) return;
@@ -751,6 +767,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Get the current color for unselected indicator dots.
      *
      * @return The unselected dot color.
+     *
+     * @see #setUnselectedDotColor(int)
      */
     @ColorInt
     public int getUnselectedDotColor() {
@@ -761,6 +779,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Set the current color for unselected indicator dots.
      *
      * @param color The new unselected dot color to use.
+     *
+     * @see #getUnselectedDotColor()
      */
     public void setUnselectedDotColor(@ColorInt int color) {
         unselectedDotColor = color;
@@ -774,6 +794,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Get the current color for selected indicator dots.
      *
      * @return The selected dot color.
+     *
+     * @see #setUnselectedDotColor(int)
      */
     @ColorInt
     public int getSelectedDotColor() {
@@ -784,6 +806,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Set the current color for selected indicator dots.
      *
      * @param color The new selected dot color to use.
+     *
+     * @see #getSelectedDotColor()
      */
     public void setSelectedDotColor(@ColorInt int color) {
         selectedDotColor = color;
