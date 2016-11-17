@@ -506,7 +506,8 @@ class IndicatorDotPathView extends ViewGroup {
             final float scaleY = distanceY / getHeight();
             final float originalScale = 1;
 
-            final Animator animator = scaleAnimator(this, originalScale, scaleX, scaleY);
+            final Animator animator = IndicatorDotPathView
+                    .scaleAnimator(this, originalScale, scaleX, scaleY);
 
             animator.setDuration(animationDuration);
 
