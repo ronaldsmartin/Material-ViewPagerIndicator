@@ -122,6 +122,7 @@ public class ViewPagerIndicator extends ViewGroup {
     @NonNull
     private final List<IndicatorDotPathView> dotPaths = new ArrayList<>();
     private IndicatorDotView selectedDot;   // @NonNull, but initialized in init().
+
     @Px
     private int dotPadding;
     @Px
@@ -130,6 +131,8 @@ public class ViewPagerIndicator extends ViewGroup {
     private int unselectedDotColor;
     @ColorInt
     private int selectedDotColor;
+    private float unselectedDotScale = 1;
+    private float selectedDotScale = 1.5f;
     private int animationStyle;
 
     //endregion
@@ -258,8 +261,11 @@ public class ViewPagerIndicator extends ViewGroup {
             height = MeasureSpec.getSize(heightMeasureSpec);
         } else {
             final int indicatorHeight = selectedDot.getMeasuredHeight();
+            final float maxScale = Math.max(unselectedDotScale, selectedDotScale);
+            final int maxScaledIndicatorHeight = (int) (indicatorHeight * maxScale);
+
             final int minHeight = ViewCompat.getMinimumHeight(this);
-            height = Math.max(minHeight, indicatorHeight + heightPadding);
+            height = Math.max(minHeight, maxScaledIndicatorHeight + heightPadding);
         }
 
         final int childState = ViewCompat.getMeasuredHeightAndState(selectedDot);
@@ -357,6 +363,7 @@ public class ViewPagerIndicator extends ViewGroup {
 
         final int pageCount = pagerAdapter == null ? 0 : pagerAdapter.getCount();
         updateDotCount(pageCount);
+        updatePathVisibility();
 
         lastKnownCurrentPage = currentPage;
 
@@ -423,6 +430,14 @@ public class ViewPagerIndicator extends ViewGroup {
             }
             dotPaths.removeAll(pathsToRemove);
         }
+    }
+
+    private void updatePathVisibility() {
+        int visibility = animationStyle == ANIMATION_STYLE_SCALE ? INVISIBLE : VISIBLE;
+        for (IndicatorDotPathView dotPathView : dotPaths) {
+            dotPathView.setVisibility(visibility);
+        }
+        selectedDot.setVisibility(visibility);
     }
 
     /**
@@ -523,11 +538,13 @@ public class ViewPagerIndicator extends ViewGroup {
 
     @Nullable
     private Animator getPageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
-        switch (getAnimationStyle()) {
+        switch (animationStyle) {
             case ANIMATION_STYLE_INK:
                 return getInkPageChangeAnimator(lastPageIndex, newPageIndex);
             case ANIMATION_STYLE_SCALE:
-                Log.w(TAG, "Unimplemented");
+                final int animationDuration = getContext().getResources()
+                        .getInteger(android.R.integer.config_longAnimTime);
+                return getScalePageChangeAnimator(lastPageIndex, newPageIndex, animationDuration);
             case ANIMATION_STYLE_NONE:
             default:
                 return null;
@@ -597,6 +614,30 @@ public class ViewPagerIndicator extends ViewGroup {
         return animator;
     }
 
+    @Nullable
+    private Animator getScalePageChangeAnimator(final int lastPageIndex,
+                                                final int newPageIndex,
+                                                final long animationDuration) {
+        final IndicatorDotView lastDot = getDotForPage(lastPageIndex);
+        final IndicatorDotView newDot = getDotForPage(newPageIndex);
+        if (lastDot == null || newDot == null) {
+            final String warning = lastDot == null ?
+                    "Unable to animate dot scale change: lastDot is null!" :
+                    "Unable to animate dot scale change: newDot is null!";
+            Log.w(TAG, warning);
+            return null;
+        }
+
+        final AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(
+                lastDot.scaleAnimator(unselectedDotScale),
+                newDot.scaleAnimator(selectedDotScale),
+                lastDot.colorAnimator(unselectedDotColor),
+                newDot.colorAnimator(selectedDotColor)
+        );
+        return animatorSet;
+    }
+
     private void layoutPageChangeImmediate(int newPageIndex) {
         final Rect dotRect = new Rect();
         final IndicatorDotView newPageDot = getDotForPage(newPageIndex);
@@ -610,7 +651,7 @@ public class ViewPagerIndicator extends ViewGroup {
     /**
      * Watches the ViewPager for changes, updating the indicator as needed.
      */
-    private class PageListener extends DataSetObserver
+    class PageListener extends DataSetObserver
             implements ViewPager.OnPageChangeListener, ViewPager.OnAdapterChangeListener {
 
         private int scrollState;
