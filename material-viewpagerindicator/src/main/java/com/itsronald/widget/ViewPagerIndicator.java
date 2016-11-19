@@ -275,7 +275,8 @@ public class ViewPagerIndicator extends ViewGroup {
             height = MeasureSpec.getSize(heightMeasureSpec);
         } else {
             final int indicatorHeight = selectedDot.getMeasuredHeight();
-            final float maxScale = Math.max(unselectedDotScale, selectedDotScale);
+            final float maxScale = animationStyle == ANIMATION_STYLE_SCALE ?
+                    Math.max(unselectedDotScale, selectedDotScale) : 1;
             final int maxScaledIndicatorHeight = (int) (indicatorHeight * maxScale);
 
             final int minHeight = ViewCompat.getMinimumHeight(this);
