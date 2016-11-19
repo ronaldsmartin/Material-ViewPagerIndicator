@@ -100,6 +100,10 @@ public class ViewPagerIndicator extends ViewGroup {
     @AnimationStyle
     public static final int ANIMATION_STYLE_SCALE = 2;
 
+    private static float DEFAULT_DOT_SCALE_SELECTED = 1.5f;
+
+    private static float DEFAULT_DOT_SCALE_UNSELECTED = 1f;
+
     //endregion
 
     //region ViewPager
@@ -131,8 +135,8 @@ public class ViewPagerIndicator extends ViewGroup {
     private int unselectedDotColor;
     @ColorInt
     private int selectedDotColor;
-    private float unselectedDotScale = 1;
-    private float selectedDotScale = 1.5f;
+    private float unselectedDotScale;
+    private float selectedDotScale;
     private int animationStyle;
 
     //endregion
@@ -200,6 +204,15 @@ public class ViewPagerIndicator extends ViewGroup {
         selectedDotColor = attributes.getColor(
                 R.styleable.ViewPagerIndicator_selectedDotColor,
                 IndicatorDotView.DEFAULT_SELECTED_DOT_COLOR
+        );
+
+        unselectedDotScale = attributes.getFloat(
+                R.styleable.ViewPagerIndicator_unselectedDotScale,
+                DEFAULT_DOT_SCALE_UNSELECTED
+        );
+        selectedDotScale = attributes.getFloat(
+                R.styleable.ViewPagerIndicator_selectedDotScale,
+                DEFAULT_DOT_SCALE_SELECTED
         );
 
         animationStyle = attributes.getInt(

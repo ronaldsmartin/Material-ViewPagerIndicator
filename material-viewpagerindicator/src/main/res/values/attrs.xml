@@ -24,12 +24,23 @@
     <declare-styleable name="ViewPagerIndicator">
         <!-- Standard gravity attribute. Only the vertical dimension is used. -->
         <attr name="android:gravity" />
-        <!-- Indicator sizing -->
+
+        <!-- Half the width and height of each indicator dot. -->
         <attr name="dotRadius" />
+        <!-- Spacing between each dot.-->
         <attr name="dotPadding" format="dimension" />
-        <!-- Indicator dot and path colors. The path color is the same as the unselected color. -->
+        <!-- The dot color for the selected page. -->
         <attr name="selectedDotColor" format="color" />
+        <!-- Indicator dot and path color. -->
         <attr name="unselectedDotColor" format="color" />
+        <!-- Size scale factor used for the selected page dot.
+             This value is only used with the "scale" animation style.
+             The default is 1.5. -->
+        <attr name="selectedDotScale" format="float" />
+        <!-- Size scale factor used for unselected page dots.
+             This value is only used with the "scale" animation style.
+             The default is 1.0. -->
+        <attr name="unselectedDotScale" format="float" />
         <!--
         Supported animation types:
 
