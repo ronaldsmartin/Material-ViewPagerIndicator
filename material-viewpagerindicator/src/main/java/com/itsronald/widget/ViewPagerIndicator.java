@@ -33,6 +33,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
+import android.support.annotation.UiThread;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
@@ -881,6 +882,62 @@ public class ViewPagerIndicator extends ViewGroup {
             selectedDot.setColor(color);
             selectedDot.invalidate();
         }
+    }
+
+    /**
+     * Get the current size scale factor for unselected indicator dots.
+     * This value is not used unless the current animation style is {@code ANIMATION_STYLE_SCALE}.
+     *
+     * @see #setUnselectedDotScale(float)
+     *
+     * @return The size scale for unselected page dots.
+     */
+    public float getUnselectedDotScale() {
+        return unselectedDotScale;
+    }
+
+    /**
+     * Set the size scale factor for unselected indicator dots.
+     * This value is not used unless the current animation style is {@code ANIMATION_STYLE_SCALE}.
+     *
+     * @see #getUnselectedDotScale()
+     */
+    @UiThread
+    public void setUnselectedDotScale(float unselectedDotScale) {
+        if (this.unselectedDotScale == unselectedDotScale) return;
+        if (unselectedDotScale < 0) unselectedDotScale = 0;
+
+        this.unselectedDotScale = unselectedDotScale;
+        invalidate();
+        requestLayout();
+    }
+
+    /**
+     * Get the current size scale factor for the selected indicator dot.
+     * This value is not used unless the current animation style is {@code ANIMATION_STYLE_SCALE}.
+     *
+     * @see #setSelectedDotScale(float)
+     *
+     * @return The size scale for the selected page dot.
+     */
+    public float getSelectedDotScale() {
+        return selectedDotScale;
+    }
+
+    /**
+     * Set the size scale factor for the selected indicator dot.
+     * This value is not used unless the current animation style is {@code ANIMATION_STYLE_SCALE}.
+     *
+     * @see #getSelectedDotScale()
+     */
+    @UiThread
+    public void setSelectedDotScale(float selectedDotScale) {
+        if (this.selectedDotScale == selectedDotScale) return;
+        if (selectedDotScale < 0) selectedDotScale = 0;
+
+        this.selectedDotScale = selectedDotScale;
+        invalidate();
+        requestLayout();
     }
 
     /**
