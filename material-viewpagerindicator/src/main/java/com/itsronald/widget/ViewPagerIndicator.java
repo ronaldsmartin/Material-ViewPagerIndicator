@@ -650,6 +650,7 @@ public class ViewPagerIndicator extends ViewGroup {
                 lastDot.colorAnimator(unselectedDotColor),
                 newDot.colorAnimator(selectedDotColor)
         );
+        animatorSet.setDuration(animationDuration);
         return animatorSet;
     }
 
