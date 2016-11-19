@@ -462,7 +462,9 @@ public class ViewPagerIndicator extends ViewGroup {
      * @param positionOffset The offset of the current page from horizontal center.
      * @param forceUpdate    Whether or not to force an update
      */
-    private void updateIndicatorPositions(int currentPage, float positionOffset, boolean forceUpdate) {
+    private void updateIndicatorPositions(int currentPage,
+                                          float positionOffset,
+                                          boolean forceUpdate) {
         if (currentPage != lastKnownCurrentPage && viewPager != null) {
             updateIndicators(currentPage, viewPager.getAdapter());
         } else if (!forceUpdate && positionOffset == lastKnownPositionOffset) {
@@ -476,9 +478,8 @@ public class ViewPagerIndicator extends ViewGroup {
         final int bottom = top + dotWidth;
         int left = calculateIndicatorDotStart();
         int right = left + dotWidth;
-        for (int i = 0,
-             dotCount = indicatorDots.size(),
-             pathCount = dotPaths.size(); i < dotCount; ++i) {
+        for (int i = 0, dotCount = indicatorDots.size(), pathCount = dotPaths.size();
+                i < dotCount; ++i) {
             final IndicatorDotView dotView = indicatorDots.get(i);
             dotView.layout(left, top, right, bottom);
 
