@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Last modified 10/29/16 11:37 PM.
+ * Last modified 11/19/16 3:10 PM.
  */
 
 package com.itsronald.widget;
@@ -769,6 +769,7 @@ public class ViewPagerIndicator extends ViewGroup {
      *
      * @see #getGravity()
      */
+    @UiThread
     public void setGravity(int newGravity) {
         gravity = newGravity;
         requestLayout();
@@ -793,6 +794,7 @@ public class ViewPagerIndicator extends ViewGroup {
      *
      * @see #getDotPadding()
      */
+    @UiThread
     public void setDotPadding(@Px int newDotPadding) {
         if (dotPadding == newDotPadding) return;
         if (newDotPadding < 0) newDotPadding = 0;
@@ -821,6 +823,7 @@ public class ViewPagerIndicator extends ViewGroup {
      *
      * @see #getDotRadius()
      */
+    @UiThread
     public void setDotRadius(@Px int newRadius) {
         if (dotRadius == newRadius) return;
         if (newRadius < 0) newRadius = 0;
@@ -852,6 +855,7 @@ public class ViewPagerIndicator extends ViewGroup {
      *
      * @see #getUnselectedDotColor()
      */
+    @UiThread
     public void setUnselectedDotColor(@ColorInt int color) {
         unselectedDotColor = color;
         for (IndicatorDotView indicatordot : indicatorDots) {
@@ -879,6 +883,7 @@ public class ViewPagerIndicator extends ViewGroup {
      *
      * @see #getSelectedDotColor()
      */
+    @UiThread
     public void setSelectedDotColor(@ColorInt int color) {
         selectedDotColor = color;
         if (selectedDot != null) {
@@ -963,6 +968,7 @@ public class ViewPagerIndicator extends ViewGroup {
      *
      * @see #getAnimationStyle()
      */
+    @UiThread
     public void setAnimationStyle(@AnimationStyle int animationStyle) {
         this.animationStyle = animationStyle;
         invalidate();
