@@ -16,11 +16,4 @@
   ~ Last modified 10/12/16 11:22 PM.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.itsronald.widget">
-
-    <application android:allowBackup="true" android:label="@string/app_name"
-        android:supportsRtl="true">
-
-    </application>
-
-</manifest>
+<manifest package="com.itsronald.widget"/>
