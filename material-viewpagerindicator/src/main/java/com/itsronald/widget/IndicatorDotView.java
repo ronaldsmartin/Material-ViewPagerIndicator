@@ -21,8 +21,10 @@ package com.itsronald.widget;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -156,6 +158,7 @@ class IndicatorDotView extends ImageView {
      */
     void setColor(@ColorInt int color) {
         dot.getPaint().setColor(color);
+        invalidate();
     }
 
     //endregion
@@ -204,19 +207,8 @@ class IndicatorDotView extends ImageView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             animator = ViewAnimationUtils
                     .createCircularReveal(this, centerX, centerY, 0, dotRadius);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            final PropertyValuesHolder scaleX = PropertyValuesHolder
-                    .ofFloat(View.SCALE_X, oldScale, newScale);
-            final PropertyValuesHolder scaleY = PropertyValuesHolder
-                    .ofFloat(View.SCALE_Y, oldScale, newScale);
-            animator = ObjectAnimator.ofPropertyValuesHolder(this, scaleX, scaleY);
         } else {
-            final Animator scaleX = ObjectAnimator.ofFloat(this, "scaleX", oldScale, newScale);
-            final Animator scaleY = ObjectAnimator.ofFloat(this, "scaleY", oldScale, newScale);
-
-            final AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.playTogether(scaleX, scaleY);
-            animator = animatorSet;
+            animator = scaleAnimator(oldScale, oldScale, newScale, newScale);
         }
         return animator;
     }
@@ -232,6 +224,8 @@ class IndicatorDotView extends ImageView {
      *            coordinate space.
      * @param toY The vertical coordinate to which this view should move, in this view's
      *            coordinate space.
+     * @param animationDuration The length of the animation, in milliseconds.
+     *
      * @return An animator that will move this view to (toX, toY) when started.
      */
     @NonNull
@@ -257,6 +251,89 @@ class IndicatorDotView extends ImageView {
             animator = animatorSet;
         }
         animator.setDuration(animationDuration);
+
+        return animator;
+    }
+
+    //endregion
+
+    //region Scale animation
+
+    /**
+     * Animation: Grow or shrink this dot from one scale size to a another scale size.
+     *
+     * @param oldScaleX The amount the view should start scaling in x around the pivot point, as a
+     *                  proportion of the view's unscaled width.
+     * @param oldScaleY The amount the view should start scaling in y around the pivot point, as a
+     *                  proportion of the view's unscaled width.
+     * @param toScaleX The amount the view should finish scaling in x around the pivot point, as a
+     *                 proportion of the view's unscaled width.
+     * @param toScaleY The amount the view should finish scaling in y around the pivot point, as a
+     *                 proportion of the view's unscaled width.
+     *
+     * @return An animator that will change this dot's size when started.
+     */
+    @NonNull
+    private Animator scaleAnimator(final float oldScaleX,
+                                   final float oldScaleY,
+                                   final float toScaleX,
+                                   final float toScaleY) {
+        final Animator animator;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            final PropertyValuesHolder scaleX = PropertyValuesHolder
+                    .ofFloat(View.SCALE_X, oldScaleX, toScaleX);
+            final PropertyValuesHolder scaleY = PropertyValuesHolder
+                    .ofFloat(View.SCALE_Y, oldScaleY, toScaleY);
+            animator = ObjectAnimator.ofPropertyValuesHolder(this, scaleX, scaleY);
+        } else {
+            final Animator scaleX = ObjectAnimator.ofFloat(this, "scaleX", oldScaleX, toScaleX);
+            final Animator scaleY = ObjectAnimator.ofFloat(this, "scaleY", oldScaleY, toScaleY);
+
+            final AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(scaleX, scaleY);
+            animator = animatorSet;
+        }
+        return animator;
+    }
+
+    /**
+     * Animation: Grow or shrink this dot from its current scale size to a new scale size.
+     *
+     * @param toScale The amount the view should be scaled around the pivot point, as a proportion
+     *                of the view's unscaled width, in both the X and Y directions.
+     *
+     * @return An animator that will change this dot's size when started.
+     */
+    @NonNull
+    Animator scaleAnimator(final float toScale) {
+        return scaleAnimator(getScaleX(), getScaleY(), toScale, toScale);
+    }
+
+    /**
+     * Animation: Change the color of this dot to a new color.
+     *
+     * @param toColor The new color for this dot.
+     *
+     * @return An animator that will change this dot's color when started.
+     */
+    @NonNull
+    Animator colorAnimator(@ColorInt int toColor) {
+        final ValueAnimator animator;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            animator = ValueAnimator.ofArgb(getColor(), toColor);
+        } else {
+            animator = new ValueAnimator();
+            animator.setIntValues(getColor(), toColor);
+            animator.setEvaluator(new ArgbEvaluator());
+        }
+
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                final int color = (int) animation.getAnimatedValue();
+                setColor(color);
+            }
+        });
 
         return animator;
     }

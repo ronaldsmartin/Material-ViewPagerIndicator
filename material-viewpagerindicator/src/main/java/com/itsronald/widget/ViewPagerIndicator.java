@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Last modified 10/12/16 11:22 PM.
+ * Last modified 11/19/16 3:10 PM.
  */
 
 package com.itsronald.widget;
@@ -29,9 +29,11 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Dimension;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
+import android.support.annotation.UiThread;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
@@ -41,9 +43,12 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import java.lang.annotation.Retention;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * ViewPagerIndicator is a non-interactive indicator of the current, next,
@@ -57,10 +62,50 @@ import java.util.List;
 @ViewPager.DecorView
 public class ViewPagerIndicator extends ViewGroup {
 
+    //region Constants
+
     @NonNull
     private static final String TAG = "ViewPagerIndicator";
     
     private static final long DOT_SLIDE_ANIM_DURATION = 150;    // 150 ms.
+
+    /**
+     * Indicator animation styles.
+     * <p>
+     * You can use {@link #getAnimationStyle()} and {@link #setAnimationStyle(int)} in conjunction
+     * with these values or the {@code animationStyle} XML styleable attribute to control the
+     * indicator's page change animations.
+     */
+    @IntDef({ANIMATION_STYLE_NONE, ANIMATION_STYLE_INK, ANIMATION_STYLE_SCALE})
+    @Retention(SOURCE)
+    public @interface AnimationStyle {}
+
+    /**
+     * Indicator animation style: The selected dot changes colors with no animation.
+     */
+    @AnimationStyle
+    public static final int ANIMATION_STYLE_NONE = 0;
+    /**
+     * Indicator animation style: The selected dot slides along a dynamic path that collapses
+     * behind it.
+     * <p>
+     * This is the default animation style.
+     */
+    @AnimationStyle
+    public static final int ANIMATION_STYLE_INK = 1;
+    /**
+     * Indicator animation style: The selected dot is slightly larger than the unselected dots.
+     * When the page changes, the dot for the new page grows and changes color, while the dot for
+     * the old page shifts to match the other unselected page dots.
+     */
+    @AnimationStyle
+    public static final int ANIMATION_STYLE_SCALE = 2;
+
+    private static float DEFAULT_DOT_SCALE_SELECTED = 1.5f;
+
+    private static float DEFAULT_DOT_SCALE_UNSELECTED = 1f;
+
+    //endregion
 
     //region ViewPager
 
@@ -82,6 +127,7 @@ public class ViewPagerIndicator extends ViewGroup {
     @NonNull
     private final List<IndicatorDotPathView> dotPaths = new ArrayList<>();
     private IndicatorDotView selectedDot;   // @NonNull, but initialized in init().
+
     @Px
     private int dotPadding;
     @Px
@@ -90,6 +136,9 @@ public class ViewPagerIndicator extends ViewGroup {
     private int unselectedDotColor;
     @ColorInt
     private int selectedDotColor;
+    private float unselectedDotScale;
+    private float selectedDotScale;
+    private int animationStyle;
 
     //endregion
 
@@ -158,6 +207,20 @@ public class ViewPagerIndicator extends ViewGroup {
                 IndicatorDotView.DEFAULT_SELECTED_DOT_COLOR
         );
 
+        unselectedDotScale = attributes.getFloat(
+                R.styleable.ViewPagerIndicator_unselectedDotScale,
+                DEFAULT_DOT_SCALE_UNSELECTED
+        );
+        selectedDotScale = attributes.getFloat(
+                R.styleable.ViewPagerIndicator_selectedDotScale,
+                DEFAULT_DOT_SCALE_SELECTED
+        );
+
+        animationStyle = attributes.getInt(
+                R.styleable.ViewPagerIndicator_animationStyle,
+                ANIMATION_STYLE_INK
+        );
+
         attributes.recycle();
 
         selectedDot = new IndicatorDotView(context);
@@ -192,9 +255,9 @@ public class ViewPagerIndicator extends ViewGroup {
         final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         if (widthMode == MeasureSpec.EXACTLY) {
             /*
-             * Due to the implementation of onMeasure() in ViewPager, this case will always be
-             * called if vertical layout_gravity is specified on this view. Since the Material
-             * Design spec usually positions dot indicators like this at the bottom of pages, this
+             * Due to the implementation of onMeasure() in ViewPager, this case will be called if
+             * vertical layout_gravity is specified on this view. Since the Material Design spec
+             * usually positions dot indicators like this at the bottom of pages, that means this
              * case will be called almost all the time.
              */
             width = MeasureSpec.getSize(widthMeasureSpec);
@@ -212,8 +275,12 @@ public class ViewPagerIndicator extends ViewGroup {
             height = MeasureSpec.getSize(heightMeasureSpec);
         } else {
             final int indicatorHeight = selectedDot.getMeasuredHeight();
+            final float maxScale = animationStyle == ANIMATION_STYLE_SCALE ?
+                    Math.max(unselectedDotScale, selectedDotScale) : 1;
+            final int maxScaledIndicatorHeight = (int) (indicatorHeight * maxScale);
+
             final int minHeight = ViewCompat.getMinimumHeight(this);
-            height = Math.max(minHeight, indicatorHeight + heightPadding);
+            height = Math.max(minHeight, maxScaledIndicatorHeight + heightPadding);
         }
 
         final int childState = ViewCompat.getMeasuredHeightAndState(selectedDot);
@@ -311,6 +378,7 @@ public class ViewPagerIndicator extends ViewGroup {
 
         final int pageCount = pagerAdapter == null ? 0 : pagerAdapter.getCount();
         updateDotCount(pageCount);
+        updatePathVisibility();
 
         lastKnownCurrentPage = currentPage;
 
@@ -379,6 +447,14 @@ public class ViewPagerIndicator extends ViewGroup {
         }
     }
 
+    private void updatePathVisibility() {
+        int visibility = animationStyle == ANIMATION_STYLE_SCALE ? INVISIBLE : VISIBLE;
+        for (IndicatorDotPathView dotPathView : dotPaths) {
+            dotPathView.setVisibility(visibility);
+        }
+        selectedDot.setVisibility(visibility);
+    }
+
     /**
      * Taken from:
      * https://android.googlesource.com/platform/frameworks/support/+/nougat-release/v4/java/android/support/v4/view/PagerTitleStrip.java#336
@@ -387,7 +463,9 @@ public class ViewPagerIndicator extends ViewGroup {
      * @param positionOffset The offset of the current page from horizontal center.
      * @param forceUpdate    Whether or not to force an update
      */
-    private void updateIndicatorPositions(int currentPage, float positionOffset, boolean forceUpdate) {
+    private void updateIndicatorPositions(int currentPage,
+                                          float positionOffset,
+                                          boolean forceUpdate) {
         if (currentPage != lastKnownCurrentPage && viewPager != null) {
             updateIndicators(currentPage, viewPager.getAdapter());
         } else if (!forceUpdate && positionOffset == lastKnownPositionOffset) {
@@ -401,9 +479,8 @@ public class ViewPagerIndicator extends ViewGroup {
         final int bottom = top + dotWidth;
         int left = calculateIndicatorDotStart();
         int right = left + dotWidth;
-        for (int i = 0,
-             dotCount = indicatorDots.size(),
-             pathCount = dotPaths.size(); i < dotCount; ++i) {
+        for (int i = 0, dotCount = indicatorDots.size(), pathCount = dotPaths.size();
+                i < dotCount; ++i) {
             final IndicatorDotView dotView = indicatorDots.get(i);
             dotView.layout(left, top, right, bottom);
 
@@ -476,7 +553,22 @@ public class ViewPagerIndicator extends ViewGroup {
     }
 
     @Nullable
-    private Animator pageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
+    private Animator getPageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
+        switch (animationStyle) {
+            case ANIMATION_STYLE_INK:
+                return getInkPageChangeAnimator(lastPageIndex, newPageIndex);
+            case ANIMATION_STYLE_SCALE:
+                final int animationDuration = getContext().getResources()
+                        .getInteger(android.R.integer.config_longAnimTime);
+                return getScalePageChangeAnimator(lastPageIndex, newPageIndex, animationDuration);
+            case ANIMATION_STYLE_NONE:
+            default:
+                return null;
+        }
+    }
+
+    @Nullable
+    private Animator getInkPageChangeAnimator(final int lastPageIndex, final int newPageIndex) {
         final IndicatorDotPathView dotPath = getDotPathForPageChange(lastPageIndex, newPageIndex);
         final IndicatorDotView lastDot = getDotForPage(lastPageIndex);
 
@@ -538,10 +630,45 @@ public class ViewPagerIndicator extends ViewGroup {
         return animator;
     }
 
+    @Nullable
+    private Animator getScalePageChangeAnimator(final int lastPageIndex,
+                                                final int newPageIndex,
+                                                final long animationDuration) {
+        final IndicatorDotView lastDot = getDotForPage(lastPageIndex);
+        final IndicatorDotView newDot = getDotForPage(newPageIndex);
+        if (lastDot == null || newDot == null) {
+            final String warning = lastDot == null ?
+                    "Unable to animate dot scale change: lastDot is null!" :
+                    "Unable to animate dot scale change: newDot is null!";
+            Log.w(TAG, warning);
+            return null;
+        }
+
+        final AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(
+                lastDot.scaleAnimator(unselectedDotScale),
+                newDot.scaleAnimator(selectedDotScale),
+                lastDot.colorAnimator(unselectedDotColor),
+                newDot.colorAnimator(selectedDotColor)
+        );
+        animatorSet.setDuration(animationDuration);
+        return animatorSet;
+    }
+
+    private void layoutPageChangeImmediate(int newPageIndex) {
+        final Rect dotRect = new Rect();
+        final IndicatorDotView newPageDot = getDotForPage(newPageIndex);
+        if (newPageDot != null) {
+            newPageDot.getDrawingRect(dotRect);
+            offsetDescendantRectToMyCoords(newPageDot, dotRect);
+            selectedDot.layout(dotRect.left, dotRect.top, dotRect.right, dotRect.bottom);
+        }
+    }
+
     /**
      * Watches the ViewPager for changes, updating the indicator as needed.
      */
-    private class PageListener extends DataSetObserver
+    class PageListener extends DataSetObserver
             implements ViewPager.OnPageChangeListener, ViewPager.OnAdapterChangeListener {
 
         private int scrollState;
@@ -556,21 +683,27 @@ public class ViewPagerIndicator extends ViewGroup {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            //do nothing
+            // No action necessary - animations will be triggered only when the page has changed
+            // completely.
         }
 
         @Override
         public void onPageSelected(int position) {
-            final Animator pageChangeAnimator = pageChangeAnimator(lastKnownCurrentPage, position);
+            final Animator pageChangeAnimator =
+                    getPageChangeAnimator(lastKnownCurrentPage, position);
+
             if (scrollState == ViewPager.SCROLL_STATE_IDLE
                     && viewPager != null) {
                 // Only update the text here if we're not dragging or settling.
                 refresh();
             }
-            if (pageChangeAnimator != null) {
+
+            if (pageChangeAnimator == null) {
+                layoutPageChangeImmediate(position);
+            } else {
                 pageChangeAnimator.start();
             }
-            //update lastKnownCurrentPage here
+
             lastKnownCurrentPage = position;
         }
 
@@ -621,6 +754,8 @@ public class ViewPagerIndicator extends ViewGroup {
     /**
      * Get the {@link Gravity} used to position dots within the indicator.
      * Only the vertical gravity component is used.
+     *
+     * @see #setGravity(int)
      */
     public int getGravity() {
         return gravity;
@@ -631,7 +766,10 @@ public class ViewPagerIndicator extends ViewGroup {
      * Only the vertical gravity component is used.
      *
      * @param newGravity {@link Gravity} constant for positioning indicator dots.
+     *
+     * @see #getGravity()
      */
+    @UiThread
     public void setGravity(int newGravity) {
         gravity = newGravity;
         requestLayout();
@@ -641,6 +779,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Get the current spacing between each indicator dot.
      *
      * @return The distance between each indicator dot, in pixels.
+     *
+     * @see #setDotPadding(int)
      */
     @Px
     public int getDotPadding() {
@@ -651,7 +791,10 @@ public class ViewPagerIndicator extends ViewGroup {
      * Set the spacing between each indicator dot.
      *
      * @param newDotPadding The distance to use between each indicator dot, in pixels.
+     *
+     * @see #getDotPadding()
      */
+    @UiThread
     public void setDotPadding(@Px int newDotPadding) {
         if (dotPadding == newDotPadding) return;
         if (newDotPadding < 0) newDotPadding = 0;
@@ -665,6 +808,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Get the current radius of each indicator dot.
      *
      * @return The radius of each indicator dot, in pixels.
+     *
+     * @see #setDotRadius(int)
      */
     @Px
     public int getDotRadius() {
@@ -675,7 +820,10 @@ public class ViewPagerIndicator extends ViewGroup {
      * Set the radius of each indicator dot.
      *
      * @param newRadius The new radius to use for each indicator dot.
+     *
+     * @see #getDotRadius()
      */
+    @UiThread
     public void setDotRadius(@Px int newRadius) {
         if (dotRadius == newRadius) return;
         if (newRadius < 0) newRadius = 0;
@@ -692,6 +840,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Get the current color for unselected indicator dots.
      *
      * @return The unselected dot color.
+     *
+     * @see #setUnselectedDotColor(int)
      */
     @ColorInt
     public int getUnselectedDotColor() {
@@ -702,7 +852,10 @@ public class ViewPagerIndicator extends ViewGroup {
      * Set the current color for unselected indicator dots.
      *
      * @param color The new unselected dot color to use.
+     *
+     * @see #getUnselectedDotColor()
      */
+    @UiThread
     public void setUnselectedDotColor(@ColorInt int color) {
         unselectedDotColor = color;
         for (IndicatorDotView indicatordot : indicatorDots) {
@@ -715,6 +868,8 @@ public class ViewPagerIndicator extends ViewGroup {
      * Get the current color for selected indicator dots.
      *
      * @return The selected dot color.
+     *
+     * @see #setUnselectedDotColor(int)
      */
     @ColorInt
     public int getSelectedDotColor() {
@@ -725,13 +880,99 @@ public class ViewPagerIndicator extends ViewGroup {
      * Set the current color for selected indicator dots.
      *
      * @param color The new selected dot color to use.
+     *
+     * @see #getSelectedDotColor()
      */
+    @UiThread
     public void setSelectedDotColor(@ColorInt int color) {
         selectedDotColor = color;
         if (selectedDot != null) {
             selectedDot.setColor(color);
             selectedDot.invalidate();
         }
+    }
+
+    /**
+     * Get the current size scale factor for unselected indicator dots.
+     * This value is not used unless the current animation style is {@code ANIMATION_STYLE_SCALE}.
+     *
+     * @see #setUnselectedDotScale(float)
+     *
+     * @return The size scale for unselected page dots.
+     */
+    public float getUnselectedDotScale() {
+        return unselectedDotScale;
+    }
+
+    /**
+     * Set the size scale factor for unselected indicator dots.
+     * This value is not used unless the current animation style is {@code ANIMATION_STYLE_SCALE}.
+     *
+     * @see #getUnselectedDotScale()
+     */
+    @UiThread
+    public void setUnselectedDotScale(float unselectedDotScale) {
+        if (this.unselectedDotScale == unselectedDotScale) return;
+        if (unselectedDotScale < 0) unselectedDotScale = 0;
+
+        this.unselectedDotScale = unselectedDotScale;
+        invalidate();
+        requestLayout();
+    }
+
+    /**
+     * Get the current size scale factor for the selected indicator dot.
+     * This value is not used unless the current animation style is {@code ANIMATION_STYLE_SCALE}.
+     *
+     * @see #setSelectedDotScale(float)
+     *
+     * @return The size scale for the selected page dot.
+     */
+    public float getSelectedDotScale() {
+        return selectedDotScale;
+    }
+
+    /**
+     * Set the size scale factor for the selected indicator dot.
+     * This value is not used unless the current animation style is {@code ANIMATION_STYLE_SCALE}.
+     *
+     * @see #getSelectedDotScale()
+     */
+    @UiThread
+    public void setSelectedDotScale(float selectedDotScale) {
+        if (this.selectedDotScale == selectedDotScale) return;
+        if (selectedDotScale < 0) selectedDotScale = 0;
+
+        this.selectedDotScale = selectedDotScale;
+        invalidate();
+        requestLayout();
+    }
+
+    /**
+     * Get the current animation style used for page changes.
+     *
+     * @return The {@link AnimationStyle} currently being used when the indicator changes pages.
+     *
+     * @see #setAnimationStyle(int)
+     */
+    @AnimationStyle
+    public int getAnimationStyle() {
+        return animationStyle;
+    }
+
+    /**
+     * Set a new page change animation style for the indicator.
+     *
+     * @param animationStyle The animation to use when the ViewPager page is changed.
+     *                       Supported values can be found in {@link AnimationStyle}.
+     *
+     * @see #getAnimationStyle()
+     */
+    @UiThread
+    public void setAnimationStyle(@AnimationStyle int animationStyle) {
+        this.animationStyle = animationStyle;
+        invalidate();
+        requestLayout();
     }
 
     //endregion

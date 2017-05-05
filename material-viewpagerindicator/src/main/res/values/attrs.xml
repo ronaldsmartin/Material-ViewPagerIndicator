@@ -14,20 +14,52 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   ~
-  ~ Last modified 10/12/16 11:22 PM.
+  ~ Last modified 10/29/16 10:11 PM.
   -->
 
 <resources>
     <attr name="dotRadius" format="dimension" />
 
+    <!-- Public styleable attributes for customizing indicators. -->
     <declare-styleable name="ViewPagerIndicator">
+        <!-- Standard gravity attribute. Only the vertical dimension is used. -->
         <attr name="android:gravity" />
+
+        <!-- Half the width and height of each indicator dot. -->
         <attr name="dotRadius" />
+        <!-- Spacing between each dot.-->
         <attr name="dotPadding" format="dimension" />
+        <!-- The dot color for the selected page. -->
         <attr name="selectedDotColor" format="color" />
+        <!-- Indicator dot and path color. -->
         <attr name="unselectedDotColor" format="color" />
+        <!-- Size scale factor used for the selected page dot.
+             This value is only used with the "scale" animation style.
+             The default is 1.5. -->
+        <attr name="selectedDotScale" format="float" />
+        <!-- Size scale factor used for unselected page dots.
+             This value is only used with the "scale" animation style.
+             The default is 1.0. -->
+        <attr name="unselectedDotScale" format="float" />
+        <!--
+        Supported animation types:
+
+             1. None   The selected dot changes colors with no animation.
+             2. Ink    (Default) A Material Design animation in which the selected dot slides along
+                       a dynamic path that collapses behind it.
+             3. Scale  The selected dot is slightly larger than the unselected dots. When the page
+                       changes, the dot for the new page grows and changes color, while the dot for
+                       the old page shifts to match the other unselected page dots.
+                       (As seen in the stock launcher and Google News & Weather.)
+        -->
+        <attr name="animationStyle" format="enum">
+            <enum name="none" value="0" />
+            <enum name="ink" value="1" />
+            <enum name="scale" value="2" />
+        </attr>
     </declare-styleable>
 
+    <!-- Internal styleable attributes for debugging individual dots. -->
     <declare-styleable name="IndicatorDotView">
         <attr name="dotRadius" />
         <attr name="dotColor" format="color" />
