@@ -23,6 +23,7 @@
     <declare-styleable name="ViewPagerIndicator">
         <attr name="android:gravity" />
         <attr name="dotRadius" />
+        <attr name="viewPagerId" format="reference" />
         <attr name="dotPadding" format="dimension" />
         <attr name="selectedDotColor" format="color" />
         <attr name="unselectedDotColor" format="color" />
