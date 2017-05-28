@@ -29,6 +29,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Dimension;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
@@ -70,6 +71,9 @@ public class ViewPagerIndicator extends ViewGroup {
     private ViewPager viewPager;
     @Nullable
     private WeakReference<PagerAdapter> pagerAdapterRef;
+
+    @IdRes
+    private int viewPagerId;
 
     //endregion
 
@@ -157,6 +161,8 @@ public class ViewPagerIndicator extends ViewGroup {
                 R.styleable.ViewPagerIndicator_selectedDotColor,
                 IndicatorDotView.DEFAULT_SELECTED_DOT_COLOR
         );
+
+        viewPagerId = attributes.getResourceId(R.styleable.ViewPagerIndicator_viewPagerId, -1);
 
         attributes.recycle();
 
@@ -250,17 +256,21 @@ public class ViewPagerIndicator extends ViewGroup {
         super.onAttachedToWindow();
 
         final ViewParent parent = getParent();
-        if (!(parent instanceof ViewPager)) {
+
+        if (viewPagerId != -1 && parent instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) parent;
+            viewPager = (ViewPager) viewGroup.findViewById(viewPagerId);
+        } else if (!(parent instanceof ViewPager)) {
             throw new IllegalStateException(
-                    "ViewPagerIndicator must be a direct child of a ViewPager.");
+                    "ViewPagerIndicator must be a direct child of a ViewPager or Id must be set via viewPagerId.");
+        } else {
+            final ViewPager pager = (ViewPager) parent;
+            viewPager = pager;
         }
 
-        final ViewPager pager = (ViewPager) parent;
-        viewPager = pager;
-
-        final PagerAdapter adapter = pager.getAdapter();
-        pager.addOnPageChangeListener(pageListener);
-        pager.addOnAdapterChangeListener(pageListener);
+        final PagerAdapter adapter = viewPager.getAdapter();
+        viewPager.addOnPageChangeListener(pageListener);
+        viewPager.addOnAdapterChangeListener(pageListener);
 
         final PagerAdapter lastAdapter = pagerAdapterRef != null ? pagerAdapterRef.get() : null;
         updateAdapter(lastAdapter, adapter);
