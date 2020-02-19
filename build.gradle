@@ -50,13 +50,13 @@ ext {
 }
 
 ext.deps = [
-    supportAnnotations: 'com.android.support:support-annotations:28.0.0',
-    supportAppCompat: 'com.android.support:appcompat-v7:28.0.0',
-    supportCardView: 'com.android.support:cardview-v7:28.0.0',
-    supportCoreUi: 'com.android.support:support-core-ui:28.0.0',
-    supportDesign: 'com.android.support:design:28.0.0',
-    supportFragments: 'com.android.support:support-fragment:28.0.0',
+    supportAnnotations: 'androidx.annotation:annotation:1.0.0',
+    supportAppCompat: 'androidx.appcompat:appcompat:1.0.0',
+    supportCardView: 'androidx.cardview:cardview:1.0.0',
+    supportCoreUi: 'androidx.legacy:legacy-support-core-ui:1.0.0',
+    supportDesign: 'com.google.android.material:material:1.0.0',
+    supportFragments: 'androidx.fragment:fragment:1.0.0',
 
     junit: 'junit:junit:4.12',
-    espresso: 'com.android.support.test.espresso:espresso-core:3.0.2'
+    espresso: 'androidx.test.espresso:espresso-core:3.1.0'
 ]
