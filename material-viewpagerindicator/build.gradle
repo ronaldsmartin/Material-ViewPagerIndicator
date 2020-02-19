@@ -40,12 +40,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile deps.supportAnnotations
-    compile deps.supportCoreUi
-    compile deps.supportFragments
+    implementation deps.supportAnnotations
+    implementation deps.supportCoreUi
+    implementation deps.supportFragments
 
-    androidTestCompile deps.espresso
-    testCompile deps.junit
+    androidTestImplementation deps.espresso
+    testImplementation deps.junit
 }
