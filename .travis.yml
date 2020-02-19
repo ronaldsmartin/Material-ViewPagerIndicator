@@ -1,26 +1,31 @@
 language: android
 
+jdk:
+  - openjdk8
+
 android:
   components:
     - tools
     - platform-tools
-    - build-tools-24.0.2
-    - android-24
-    - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-18
+    - build-tools-29.0.0
+    - android-29
+    - android-22
+    - sys-img-armeabi-v7a-android-22
 
-jdk:
-  - oraclejdk8
+  licenses:
+    - android-sdk-preview-license-.+
+    - android-sdk-license-.+
+    - google-gdk-license-.+
 
 before_script:
-  # Create and start an emulator for instrumentation tests.
-  - echo no | android create avd --force -n test -t android-18 --abi armeabi-v7a
+  - android list target
+  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82
-  
+
 script:
-   - ./gradlew build connectedCheck
+  - ./gradlew build connectedCheck
 
 branches:
   except:
@@ -30,6 +35,6 @@ sudo: false
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-  
+
 cache:
-- $HOME/.gradle
+  - $HOME/.gradle
