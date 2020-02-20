@@ -30,7 +30,7 @@ android {
         versionCode 3
         versionName "1.0.2"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -51,15 +51,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':material-viewpagerindicator')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':material-viewpagerindicator')
 
-    compile deps.supportAnnotations
-    compile deps.supportAppCompat
-    compile deps.supportCardView
-    compile deps.supportDesign
-    compile deps.supportFragments
+    implementation deps.supportAnnotations
+    implementation deps.supportAppCompat
+    implementation deps.supportCardView
+    implementation deps.supportDesign
+    implementation deps.supportFragments
 
-    androidTestCompile deps.espresso
-    testCompile deps.junit
+    androidTestImplementation deps.espresso
+    testImplementation deps.junit
 }

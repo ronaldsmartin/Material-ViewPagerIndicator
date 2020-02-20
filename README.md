@@ -27,7 +27,7 @@ Usage is simple - just add it as a child view of your `ViewPager`!
 ### XML
 
 ```xml
-<android.support.v4.view.ViewPager
+<androidx.viewpager.widget.ViewPager
     android:id="@+id/view_pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -41,14 +41,14 @@ Usage is simple - just add it as a child view of your `ViewPager`!
         android:layout_gravity="bottom|center_horizontal"
         android:gravity="center_vertical"/>
 
-</android.support.v4.view.ViewPager>
+ </androidx.viewpager.widget.ViewPager>
 ```
 
 ### Programatically
 Or in code...
 
 ```java
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
 
@@ -92,7 +92,7 @@ Add Material-ViewPagerIndicator to your app dependencies:
 
 dependencies {
     // x.y.z is the latest release version number.
-    compile 'com.github.ronaldsmartin:Material-ViewPagerIndicator:x.y.z'
+    implementation 'com.github.ronaldsmartin:Material-ViewPagerIndicator:x.y.z'
 }
 
 ```
